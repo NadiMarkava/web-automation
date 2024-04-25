@@ -7,6 +7,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import web.components.AbstractModal;
+import web.components.FooterComponent;
 import web.enums.Navbar;
 
 import java.lang.invoke.MethodHandles;
@@ -48,6 +49,10 @@ public class AbstractPage {
 
     public AbstractModal getModalForm(final WebDriver driver) {
         return new AbstractModal(driver.findElement(By.xpath(MODAL_XPATH)));
+    }
+
+    public FooterComponent getFooterComponent(final WebDriver driver) {
+        return new FooterComponent(driver.findElement(By.id("footc")));
     }
 
     public void clickNavBar(final WebDriver driver, Navbar name) {

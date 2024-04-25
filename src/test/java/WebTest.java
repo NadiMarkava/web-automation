@@ -31,7 +31,7 @@ public class WebTest extends AbstractTest {
         assertTrue(product.getCardText().length() >=170, "Length does not match");
         assertTrue(product.getImageAttribute().matches("https:\\/\\/demoblaze\\.com\\/imgs\\/.*.jpg"), "Image does not match");
         assertTrue(product.getPrice().matches("[0-9]{3,4}"), "Price does not match");
-        verifyFooter(driver);
+        verifyFooter(homePage, driver);
         driver.quit();
     }
 
