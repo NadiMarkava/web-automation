@@ -27,8 +27,6 @@ public class HomePage extends BasePage {
                 .stream()
                 .map(e -> new Product(e))
                 .collect(Collectors.toList());
-        printProductTitles(products.stream().map(Product::getName).collect(Collectors.toList()));
-        LOGGER.info("laallalala");
         return products;
     }
 
