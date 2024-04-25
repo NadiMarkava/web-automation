@@ -3,7 +3,7 @@ package web.components;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
-public class PlaceOrderPopup extends BaseComponent {
+public class PlaceOrderPopup extends AbstractModal {
 
     private By totalPrice = By.id("totalm");
 

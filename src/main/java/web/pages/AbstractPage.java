@@ -6,20 +6,18 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import web.components.AbstractModal;
 import web.enums.Navbar;
 
 import java.lang.invoke.MethodHandles;
 import java.time.Duration;
-import java.util.List;
-import java.util.stream.IntStream;
-
 import static web.pages.CartPage.PRODUCTS_CART_XPATH;
 import static web.pages.HomePage.PRODUCTS_XPATH;
 
 public class AbstractPage {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     protected static String MODAL_XPATH = "//div[@class='modal fade show']//div[@class='modal-content']";
+    private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     public void waitForElementsListNotEmpty(final WebDriver driver, String xpath, int timeout) {
         try {
@@ -48,11 +46,8 @@ public class AbstractPage {
         }
     }
 
-    public void submitModalForm(final WebDriver driver, List<String> fields, List<String> inputs) {
-        IntStream.range(0, inputs.size()).forEach(i -> {
-            driver.findElement(By.xpath(String.format("//label[text()='%s']/../input", fields.get(i)))).sendKeys(inputs.get(i));
-        });
-        driver.findElement(By.xpath(MODAL_XPATH + "//button[2]")).click();
+    public AbstractModal getModalForm(final WebDriver driver) {
+        return new AbstractModal(driver.findElement(By.xpath(MODAL_XPATH)));
     }
 
     public void clickNavBar(final WebDriver driver, Navbar name) {

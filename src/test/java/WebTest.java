@@ -1,4 +1,5 @@
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.testng.annotations.Test;
 import web.components.ConfirmOrderPopup;
@@ -15,8 +16,7 @@ import java.util.Random;
 
 import static org.testng.Assert.*;
 import static web.enums.Category.*;
-import static web.enums.Navbar.CART;
-import static web.enums.Navbar.HOME;
+import static web.enums.Navbar.*;
 
 public class WebTest extends AbstractTest {
 
@@ -143,10 +143,24 @@ public class WebTest extends AbstractTest {
         PlaceOrderPopup placeOrder = cartPage.clickPlaceOrderButton();
         List<String> fields = new ArrayList<>(Arrays.asList("Name:", "Country:", "City:", "Credit card:", "Month:", "Year:"));
         List<String> inputs = new ArrayList<>(Arrays.asList("Test", "Test", "Test", "Test", "Test", "Test"));
-        cartPage.submitModalForm(driver, fields, inputs);
+        placeOrder.submitModalForm(fields, inputs);
         ConfirmOrderPopup confirmOrderPopup = cartPage.getConfirmOrderPopup();
         assertEquals(confirmOrderPopup.getTitle(), "Thank you for your purchase!", "Prices are not equal");
         driver.quit();
+    }
+
+    @Test()
+    public void verifyModalForm() {
+        WebDriver driver = new ChromeDriver();
+        HomePage homePage = new HomePage(driver);
+        List<Product> productList = homePage.getProducts();
+        selectProduct(productList, homePage,driver);
+        CartPage cartPage = new CartPage(driver);
+        PlaceOrderPopup placeOrder = cartPage.clickPlaceOrderButton();
+        String title = "Place order";
+        List<String> fieldNames = Arrays.asList("Name:", "Country:", "City:", "Credit card:", "Month:", "Year:", "");
+        List<String> buttonsNames = Arrays.asList("Close", "Purchase");
+        verifyModal(placeOrder, title, fieldNames, buttonsNames);
     }
 
     public void selectProduct(List<Product> productList, HomePage homePage, WebDriver driver) {

@@ -1,7 +1,13 @@
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import web.components.AbstractModal;
+import web.pages.AbstractPage;
+
+import java.util.List;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
 
 
 public class AbstractTest {
@@ -16,5 +22,13 @@ public class AbstractTest {
 
     protected void verifyFooter(WebDriver driver) {
         assertEquals(driver.findElement(By.id("fotcont")).getText(), FOOTER_TEXT, "Footer text are not equal");
+    }
+
+    protected void verifyModal(AbstractModal abstractModal, String title, List<String> fieldNames, List<String> buttonsNames) {
+        assertEquals(abstractModal.getTitle(), title, "Titles are not equal");
+        assertEquals(abstractModal.getFieldNames(), fieldNames, "Fields names are not equal");
+        assertEquals(abstractModal.getButtonsNames(), buttonsNames, "Fields names are not equal");
+        abstractModal.clickModalButton("Close");
+        assertTrue(!abstractModal.isModalPresent(), "Modal is present");
     }
 }
