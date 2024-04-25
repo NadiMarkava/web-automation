@@ -5,7 +5,7 @@ import org.openqa.selenium.WebElement;
 
 public class ConfirmOrderPopup extends BaseComponent {
 
-    private final By title = By.xpath(".//h2");
+    private By title = By.xpath(".//h2");
 
     public ConfirmOrderPopup(WebElement root) {
         super(root);

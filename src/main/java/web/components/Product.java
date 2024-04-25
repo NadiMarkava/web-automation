@@ -5,10 +5,10 @@ import org.openqa.selenium.WebElement;
 
 public class Product extends BaseComponent {
 
-    private final By productImage = By.xpath(".//a/img");
-    private final By productName = By.className("card-title");
-    private final By productPrice = By.xpath(".//h5");
-    private final By productText = By.id("article");
+    private By productImage = By.xpath(".//a/img");
+    private By productName = By.className("card-title");
+    private By productPrice = By.xpath(".//h5");
+    private By productText = By.id("article");
 
     public Product(WebElement root) {
         super(root);

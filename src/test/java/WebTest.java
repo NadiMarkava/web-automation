@@ -16,8 +16,9 @@ import java.util.Random;
 import static org.testng.Assert.*;
 import static web.enums.Category.*;
 import static web.enums.Navbar.CART;
+import static web.enums.Navbar.HOME;
 
-public class WebTest {
+public class WebTest extends AbstractTest {
 
     @Test()
     public void testProductData() {
@@ -30,6 +31,7 @@ public class WebTest {
         assertTrue(product.getCardText().length() >=170, "Length does not match");
         assertTrue(product.getImageAttribute().matches("https:\\/\\/demoblaze\\.com\\/imgs\\/.*.jpg"), "Image does not match");
         assertTrue(product.getPrice().matches("[0-9]{3,4}"), "Price does not match");
+        verifyFooter(driver);
         driver.quit();
     }
 
@@ -45,7 +47,6 @@ public class WebTest {
         String price = product.getPrice();
         String text = product.getCardText();
         ProductCardPage productCardPage = homePage.clickCard(randomProductIndex);
-
         assertEquals(productCardPage.getName(), name, "Names are not equal");
         assertEquals(productCardPage.getProductPrice(), price, "Prices are not equal");
         assertEquals(productCardPage.getImageAttribute(), image, "Image's attributes are not equal");
@@ -80,13 +81,12 @@ public class WebTest {
         String image = product.getImageAttribute();
         String name = product.getName();
         String price = product.getPrice();
-        String text = product.getCardText();
         ProductCardPage productCardPage = homePage.clickCard(randomProductIndex);
-
         productCardPage.clickCartButton();
         driver.navigate().back();
         driver.navigate().back();
-        CartPage cartPage = homePage.clickNavBar(CART.getName());
+        homePage.clickNavBar(driver, CART);
+        CartPage cartPage = new CartPage(driver);
         List<String> columns = new ArrayList<>(Arrays.asList("Pic", "Title", "Price", "x"));
         assertEquals(cartPage.getTableItems(), columns, "Columns are not equal");
         assertEquals(cartPage.getProductsSize(), 1, "Sizes are not equal");
@@ -106,7 +106,7 @@ public class WebTest {
         HomePage homePage = new HomePage(driver);
         List<Product> productList = homePage.getProducts();
         selectProduct(productList, homePage, driver);
-        CartPage cartPage = homePage.clickNavBar(CART.getName());
+        CartPage cartPage = new CartPage(driver);
         assertEquals(cartPage.getProductsSize(), 1, "Sizes are not equal");
         cartPage.clickDeleteProduct(0);
         assertEquals(cartPage.getProductsSize(), 0, "Sizes are not equal");
@@ -120,8 +120,9 @@ public class WebTest {
         HomePage homePage = new HomePage(driver);
         List<Product> productList = homePage.getProducts();
         selectProduct(productList, homePage, driver);
+        CartPage cartPage = new CartPage(driver);
+        cartPage.clickNavBar(driver, HOME);
         selectProduct(productList, homePage, driver);
-        CartPage cartPage = homePage.clickNavBar(CART.getName());
         assertEquals(cartPage.getProductsSize(), 2, "Sizes are not equal");
         String price = cartPage.getTableValues(1).get(2);
         String price_ = cartPage.getTableValues(2).get(2);
@@ -129,7 +130,6 @@ public class WebTest {
         assertEquals(cartPage.getTotalPrice(), summ, "Prices are not equal");
         PlaceOrderPopup placeOrder = cartPage.clickPlaceOrderButton();
         assertEquals(placeOrder.getTotalPrice(), summ, "Prices are not equal");
-        placeOrder.closePlaceOrderPopup();
         driver.quit();
     }
 
@@ -139,11 +139,11 @@ public class WebTest {
         HomePage homePage = new HomePage(driver);
         List<Product> productList = homePage.getProducts();
         selectProduct(productList, homePage, driver);
-        CartPage cartPage = homePage.clickNavBar(CART.getName());
+        CartPage cartPage = new CartPage(driver);
         PlaceOrderPopup placeOrder = cartPage.clickPlaceOrderButton();
         List<String> fields = new ArrayList<>(Arrays.asList("Name:", "Country:", "City:", "Credit card:", "Month:", "Year:"));
-        fields.forEach(e -> placeOrder.type(e, "Test"));
-        placeOrder.clickPurchaseButton();
+        List<String> inputs = new ArrayList<>(Arrays.asList("Test", "Test", "Test", "Test", "Test", "Test"));
+        cartPage.submitModalForm(driver, fields, inputs);
         ConfirmOrderPopup confirmOrderPopup = cartPage.getConfirmOrderPopup();
         assertEquals(confirmOrderPopup.getTitle(), "Thank you for your purchase!", "Prices are not equal");
         driver.quit();
@@ -156,5 +156,6 @@ public class WebTest {
         productCardPage.clickCartButton();
         driver.navigate().back();
         driver.navigate().back();
+        homePage.clickNavBar(driver, CART);
     }
 }
