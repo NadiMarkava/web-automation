@@ -5,11 +5,11 @@ import org.openqa.selenium.WebDriver;
 
 public class ProductCardPage extends BasePage {
 
-    private final By productImage = By.xpath("//div[@class='product-image']//img");
-    private final By productName = By.className("name");
-    private final By productPrice = By.className("price-container");
-    private final By productText = By.xpath("//descendant::strong[text()='Product description']/../p");
-    private final By addToCartButton = By.xpath("//a[text()='Add to cart']");
+    private By productImage = By.xpath("//div[@class='product-image']//img");
+    private By productName = By.className("name");
+    private By productPrice = By.className("price-container");
+    private By productText = By.xpath("//descendant::strong[text()='Product description']/../p");
+    protected static String addToCartButton = "//a[text()='Add to cart']";
 
     public ProductCardPage(WebDriver driver) {
         super(driver);
@@ -35,6 +35,6 @@ public class ProductCardPage extends BasePage {
     }
 
     public void clickCartButton() {
-        driver.findElement(addToCartButton).click();
+        driver.findElement(By.xpath(addToCartButton)).click();
     }
 }

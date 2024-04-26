@@ -1,30 +1,33 @@
 package web.pages;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.support.ui.WebDriverWait;
 import web.components.Product;
 
-import java.time.Duration;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.openqa.selenium.devtools.v85.debugger.Debugger.pause;
+import static web.pages.ProductCardPage.addToCartButton;
 
 public class HomePage extends BasePage {
+
+    public static final Logger LOGGER = LogManager.getLogger(HomePage.class.getName());
+    protected static String PRODUCTS_XPATH = "//div[@class='card h-100']";
 
     public HomePage(WebDriver driver) {
         super(driver);
         driver.get("https://demoblaze.com/");
-        new WebDriverWait(driver, Duration.ofSeconds(5))
-                .until(d -> !d.findElements(By.cssSelector("div[class='card h-100']")).isEmpty());
+        waitForElementsListNotEmpty(driver, PRODUCTS_XPATH, 5);
     }
 
     public List<Product> getProducts() {
-        return driver.findElements(By.cssSelector("div[class='card h-100']"))
+        List<Product> products = driver.findElements(By.xpath(PRODUCTS_XPATH))
                 .stream()
                 .map(e -> new Product(e))
                 .collect(Collectors.toList());
+        return products;
     }
 
     public List<String> getNavItems() {
@@ -34,21 +37,13 @@ public class HomePage extends BasePage {
                 .collect(Collectors.toList());
     }
 
-    public CartPage clickNavBar(String name) {
-        driver.findElement(By.xpath(String.format("//li[contains(@class, 'nav-item')]/a[text()='%s']", name))).click();
-        new WebDriverWait(driver, Duration.ofSeconds(10))
-                .until(d -> d.findElement(By.xpath("//tr[@class='success']")));
-        return new CartPage(driver);
-    }
-
     public void selectCategory(String categoryName) {
         driver.findElement(By.xpath(String.format("//a[text()='CATEGORIES']/../a[text()='%s']", categoryName))).click();
     }
 
     public ProductCardPage clickCard(int cardNumber) {
         driver.findElements(By.xpath(".//h4/a")).get(cardNumber).click();
-        new WebDriverWait(driver, Duration.ofSeconds(5))
-                .until(d -> d.findElement(By.xpath("//a[text()='Add to cart']")).isDisplayed());
+        waitForElementIsPresent(driver, addToCartButton, 5);
         return new ProductCardPage(driver);
     }
 }

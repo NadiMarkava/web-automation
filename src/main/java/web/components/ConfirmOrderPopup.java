@@ -3,12 +3,14 @@ package web.components;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
-public class ConfirmOrderPopup extends BaseComponent {
+public class ConfirmOrderPopup {
 
-    private final By title = By.xpath(".//h2");
+    protected WebElement root;
+
+    private By title = By.xpath(".//h2");
 
     public ConfirmOrderPopup(WebElement root) {
-        super(root);
+        this.root = root;
     }
 
     public String getTitle() {

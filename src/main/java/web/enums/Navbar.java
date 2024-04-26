@@ -11,7 +11,7 @@ public enum Navbar {
 
     private final String name;
 
-    Navbar(String name) {
+    private Navbar(String name) {
         this.name = name;
     }
 

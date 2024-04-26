@@ -6,9 +6,9 @@ public enum Category {
     LAPTOPS("Laptops"),
     MONITORS("Monitors");
 
-    private final String name;
+    private String name;
 
-    Category(String name) {
+    private Category(String name) {
         this.name = name;
     }
 
