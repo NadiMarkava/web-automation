@@ -1,12 +1,12 @@
 package web.components;
 
-import org.openqa.selenium.WebElement;
+import com.zebrunner.carina.webdriver.gui.AbstractUIObject;
+import org.openqa.selenium.SearchContext;
+import org.openqa.selenium.WebDriver;
 
-public abstract class BaseComponent {
+public class BaseComponent extends AbstractUIObject {
 
-    protected WebElement root;
-
-    public BaseComponent(WebElement root) {
-        this.root = root;
+    public BaseComponent(WebDriver driver, SearchContext searchContext) {
+        super(driver, searchContext);
     }
 }

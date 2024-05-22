@@ -1,45 +1,62 @@
 package web.components;
 
+import com.zebrunner.carina.webdriver.decorator.ExtendedWebElement;
+import com.zebrunner.carina.webdriver.gui.AbstractUIObject;
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.SearchContext;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.support.FindBy;
 
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public class AbstractModal {
+public class AbstractModal extends AbstractUIObject {
 
-    protected WebElement root;
-    private final String modal = "//div[@class='modal fade show']//div[@class='modal-content']";
-    private final By title = By.xpath(modal + "//h5");
+    private final String MODAL = "//div[@class='modal fade show']//div[@class='modal-content']";
 
-    public AbstractModal(WebElement root) {
-        this.root = root;
+    @FindBy(xpath = MODAL)
+    private ExtendedWebElement modalForm;
+
+    @FindBy(xpath = MODAL + "//h5")
+    private ExtendedWebElement title;
+
+    @FindBy(xpath = MODAL + "//div[@class='form-group']/label")
+    private List<ExtendedWebElement> fieldsNames;
+
+    @FindBy(xpath = MODAL + "//div[@class='modal-footer']//button")
+    private List<ExtendedWebElement> buttonsNames;
+
+    @FindBy(xpath = MODAL + "//button[2]")
+    private ExtendedWebElement submitButton;
+
+    public AbstractModal(WebDriver driver, SearchContext searchContext) {
+        super(driver, searchContext);
     }
 
     public String getTitle() {
-        return root.findElement(title).getText();
+        return title.getText();
     }
 
     public void typeFields(List<String> fields, List<String> inputs) {
         IntStream.range(0, inputs.size()).forEach(i -> {
-            root.findElement(By.xpath(String.format("//label[text()='%s']/../input", fields.get(i)))).sendKeys(inputs.get(i));
+            findExtendedWebElement(By.xpath(String.format("//label[text()='%s']/../input", fields.get(i)))).type(inputs.get(i));
         });
     }
 
     public String getFieldText(String fieldName) {
-        return root.findElement(By.xpath(String.format("//label[text()='%s']/../input", fieldName))).getText();
+        return findExtendedWebElement(By.xpath(String.format("//label[text()='%s']/../input", fieldName))).getText();
     }
 
     public List<String> getFieldNames() {
-        return root.findElements(By.xpath(modal + "//div[@class='form-group']/label"))
+        return fieldsNames
                 .stream()
                 .map(e -> e.getText())
                 .collect(Collectors.toList());
     }
 
     public List<String> getButtonsNames() {
-        return root.findElements(By.xpath(modal + "//div[@class='modal-footer']//button"))
+        return buttonsNames
                 .stream()
                 .map(e -> e.getText())
                 .collect(Collectors.toList());
@@ -47,21 +64,21 @@ public class AbstractModal {
 
     public void typeField(List<String> fields, List<String> inputs) {
         IntStream.range(0, inputs.size()).forEach(i -> {
-            root.findElement(By.xpath(String.format("//label[text()='%s']/../input", fields.get(i))))
-                    .sendKeys(inputs.get(i));
+            findExtendedWebElement(By.xpath(String.format("//label[text()='%s']/../input", fields.get(i))))
+                    .type(inputs.get(i));
         });
     }
 
     public void submitModalForm(List<String> fields, List<String> inputs) {
         typeFields(fields, inputs);
-        root.findElement(By.xpath(modal + "//button[2]")).click();
+        submitButton.click();
     }
 
     public void clickModalButton(String button) {
-        root.findElement(By.xpath(String.format(modal + "//button[text()='%s']", button))).click();
+        findExtendedWebElement(By.xpath(String.format(MODAL + "//button[text()='%s']", button))).click();
     }
 
     public boolean isModalPresent() {
-        return root.findElement(By.xpath(modal)).isDisplayed();
+        return modalForm.isPresent();
     }
 }

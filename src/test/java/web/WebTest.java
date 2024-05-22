@@ -1,11 +1,7 @@
+package web;
+
+import org.openqa.selenium.Alert;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.firefox.FirefoxOptions;
-import org.openqa.selenium.remote.RemoteWebDriver;
-import org.testng.ITestContext;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
 import web.components.ConfirmOrderPopup;
 import web.components.PlaceOrderPopup;
@@ -14,47 +10,42 @@ import web.pages.CartPage;
 import web.pages.HomePage;
 import web.pages.ProductCardPage;
 
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import static org.testng.Assert.*;
 import static web.enums.Category.*;
 import static web.enums.Navbar.CART;
 import static web.enums.Navbar.HOME;
 
-@Listeners(AbstractTest.class)
+//@Listeners(AbstractTest.class)
 public class WebTest extends AbstractTest {
 
-    public static final Logger LOGGER = Logger.getLogger(String.valueOf(HomePage.class));
-
-    @BeforeMethod
-    public void openBrowser(ITestContext context) throws MalformedURLException {
-        ChromeOptions chromeOptions = new ChromeOptions();
-        driver = new RemoteWebDriver(new URL("http://localhost:4444"), chromeOptions);
-        context.setAttribute("WebDriver", driver);
-    }
+    public static final Logger LOGGER = Logger.getLogger(String.valueOf(WebTest.class));
 
     @Test()
-    public void testProductData() {
-        HomePage homePage = new HomePage(driver);
+    public void testProductData() throws IOException {
+        HomePage homePage = new HomePage(getDriver());
+        homePage.open();
         List<Product> productList = homePage.getProducts();
         int randomProductIndex = new Random().nextInt(productList.size());
         Product product = productList.get(randomProductIndex);
         assertTrue(product.getName().matches("[a-zA-Z0-9]+\\s[a-zA-Z0-9]+\\s[a-zA-Z0-9][a-zA-Z0-9_.-]*$"), "Name does not match" + product.getName());
-        assertTrue(product.getCardText().length() >=170, "Length does not match");
+        assertTrue(product.getCardText().length() >= 170, "Length does not match");
         assertTrue(product.getImageAttribute().matches("https:\\/\\/demoblaze\\.com\\/imgs\\/.*.jpg"), "Image does not match");
         assertTrue(product.getPrice().matches("[0-9]{3,4}"), "Price does not match");
-        verifyFooter(homePage, driver);
+        verifyFooter(homePage);
     }
 
     @Test()
-    public void testProductPage() {
-        HomePage homePage = new HomePage(driver);
+    public void testProductPage() throws IOException {
+        HomePage homePage = new HomePage(getDriver());
+        homePage.open();
         List<Product> productList = homePage.getProducts();
         int randomProductIndex = new Random().nextInt(productList.size());
         Product product = productList.get(randomProductIndex);
@@ -70,23 +61,25 @@ public class WebTest extends AbstractTest {
     }
 
     @Test()
-    public void testCategories() {
-        HomePage homePage = new HomePage(driver);
-        List<Product> products = homePage.getProducts();
+    public void testCategories() throws IOException {
+        HomePage homePage = new HomePage(getDriver());
+        homePage.open();
+        List<String> allProducts = homePage.getProducts().stream().map(p->p.getName()).collect(Collectors.toList());
         homePage.selectCategory(PHONES.getName());
-        assertNotEquals(homePage.getProducts(), products, "Products are the same!");
-        List<Product> phones = homePage.getProducts();
+        List<String> phoneProducts = homePage.getProducts().stream().map(p->p.getName()).collect(Collectors.toList());
+        assertNotEquals(phoneProducts, allProducts, "Products are the same!");
         homePage.selectCategory(LAPTOPS.getName());
-        List<Product> laptops = homePage.getProducts();
-        assertNotEquals(laptops, phones, "Products are the same!");
+        List<String> laptopProducts = homePage.getProducts().stream().map(p->p.getName()).collect(Collectors.toList());
+        assertNotEquals(laptopProducts, phoneProducts, "Products are the same!");
         homePage.selectCategory(MONITORS.getName());
-        List<Product> monitors = homePage.getProducts();
-        assertNotEquals(monitors, laptops, "Products are the same!");
+        List<String> monitorProducts = homePage.getProducts().stream().map(p->p.getName()).collect(Collectors.toList());
+        assertNotEquals(monitorProducts, laptopProducts, "Products are the same!");
     }
 
     @Test()
-    public void testShoppingCart() {
-        HomePage homePage = new HomePage(driver);
+    public void testShoppingCart() throws IOException {
+        HomePage homePage = new HomePage(getDriver());
+        homePage.open();
         List<Product> productList = homePage.getProducts();
         int randomProductIndex = new Random().nextInt(productList.size());
         Product product = productList.get(randomProductIndex);
@@ -95,10 +88,8 @@ public class WebTest extends AbstractTest {
         String price = product.getPrice();
         ProductCardPage productCardPage = homePage.clickCard(randomProductIndex);
         productCardPage.clickCartButton();
-        driver.navigate().back();
-        driver.navigate().back();
-        homePage.clickNavBar(driver, CART);
-        CartPage cartPage = new CartPage(driver);
+        homePage.clickNavBar(getDriver(), CART);
+        CartPage cartPage = new CartPage(getDriver());
         List<String> columns = new ArrayList<>(Arrays.asList("Pic", "Title", "Price", "x"));
         assertEquals(cartPage.getTableItems(), columns, "Columns are not equal");
         assertEquals(cartPage.getProductsSize(), 1, "Sizes are not equal");
@@ -112,11 +103,12 @@ public class WebTest extends AbstractTest {
     }
 
     @Test()
-    public void testDeleteProductFromCart() {
-        HomePage homePage = new HomePage(driver);
+    public void testDeleteProductFromCart() throws IOException {
+        HomePage homePage = new HomePage(getDriver());
+        homePage.open();
         List<Product> productList = homePage.getProducts();
-        selectProduct(productList, homePage, driver);
-        CartPage cartPage = new CartPage(driver);
+        selectProduct(productList, homePage, getDriver());
+        CartPage cartPage = new CartPage(getDriver());
         assertEquals(cartPage.getProductsSize(), 1, "Sizes are not equal");
         cartPage.clickDeleteProduct(0);
         assertEquals(cartPage.getProductsSize(), 0, "Sizes are not equal");
@@ -124,13 +116,14 @@ public class WebTest extends AbstractTest {
     }
 
     @Test()
-    public void testAddSomeProducts() {
-        HomePage homePage = new HomePage(driver);
+    public void testAddSomeProducts() throws IOException {
+        HomePage homePage = new HomePage(getDriver());
+        homePage.open();
         List<Product> productList = homePage.getProducts();
-        selectProduct(productList, homePage, driver);
-        CartPage cartPage = new CartPage(driver);
-        cartPage.clickNavBar(driver, HOME);
-        selectProduct(productList, homePage, driver);
+        selectProduct(productList, homePage, getDriver());
+        CartPage cartPage = new CartPage(getDriver());
+        cartPage.clickNavBar(getDriver(), HOME);
+        selectProduct(productList, homePage, getDriver());
         assertEquals(cartPage.getProductsSize(), 2, "Sizes are not equal");
         String price = cartPage.getTableValues(1).get(2);
         String price_ = cartPage.getTableValues(2).get(2);
@@ -141,11 +134,12 @@ public class WebTest extends AbstractTest {
     }
 
     @Test()
-    public void testPurchaseComplete() {
-        HomePage homePage = new HomePage(driver);
+    public void testPurchaseComplete() throws IOException {
+        HomePage homePage = new HomePage(getDriver());
+        homePage.open();
         List<Product> productList = homePage.getProducts();
-        selectProduct(productList, homePage, driver);
-        CartPage cartPage = new CartPage(driver);
+        selectProduct(productList, homePage, getDriver());
+        CartPage cartPage = new CartPage(getDriver());
         PlaceOrderPopup placeOrder = cartPage.clickPlaceOrderButton();
         List<String> fields = new ArrayList<>(Arrays.asList("Name:", "Country:", "City:", "Credit card:", "Month:", "Year:"));
         List<String> inputs = new ArrayList<>(Arrays.asList("Test", "Test", "Test", "Test", "Test", "Test"));
@@ -155,11 +149,12 @@ public class WebTest extends AbstractTest {
     }
 
     @Test()
-    public void verifyModalForm() {
-        HomePage homePage = new HomePage(driver);
+    public void verifyModalForm() throws IOException {
+        HomePage homePage = new HomePage(getDriver());
+        homePage.open();
         List<Product> productList = homePage.getProducts();
-        selectProduct(productList, homePage,driver);
-        CartPage cartPage = new CartPage(driver);
+        selectProduct(productList, homePage, getDriver());
+        CartPage cartPage = new CartPage(getDriver());
         PlaceOrderPopup placeOrder = cartPage.clickPlaceOrderButton();
         String title = "Place order";
         List<String> fieldNames = Arrays.asList("Name:", "Country:", "City:", "Credit card:", "Month:", "Year:", "");
@@ -167,18 +162,11 @@ public class WebTest extends AbstractTest {
         verifyModal(placeOrder, title, fieldNames, buttonsNames);
     }
 
-    @AfterMethod
-    public void closeBrowser() {
-        driver.quit();
-    }
-
     public void selectProduct(List<Product> productList, HomePage homePage, WebDriver driver) {
         int randomProductIndex = new Random().nextInt(productList.size());
         Product product = productList.get(randomProductIndex);
         ProductCardPage productCardPage = homePage.clickCard(randomProductIndex);
         productCardPage.clickCartButton();
-        driver.navigate().back();
-        driver.navigate().back();
         homePage.clickNavBar(driver, CART);
     }
 }

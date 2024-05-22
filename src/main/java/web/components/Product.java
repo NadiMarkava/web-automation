@@ -1,33 +1,42 @@
 package web.components;
 
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebElement;
+import com.zebrunner.carina.webdriver.decorator.ExtendedWebElement;
+import org.openqa.selenium.SearchContext;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.support.FindBy;
 
 public class Product extends BaseComponent {
 
-    private By productImage = By.xpath(".//a/img");
-    private By productName = By.className("card-title");
-    private By productPrice = By.xpath(".//h5");
-    private By productText = By.id("article");
+    @FindBy(xpath = ".//a/img")
+    private ExtendedWebElement productImage;
 
-    public Product(WebElement root) {
-        super(root);
+    @FindBy(className = "card-title")
+    private ExtendedWebElement productName;
+
+    @FindBy(xpath = ".//h5")
+    private ExtendedWebElement productPrice;
+
+    @FindBy(id = "article")
+    private ExtendedWebElement productText;
+
+    public Product(WebDriver driver, SearchContext searchContext) {
+        super(driver, searchContext);
     }
 
     public String getName() {
-        return root.findElement(productName).getText();
+        return productName.getText();
     }
 
     public String getCardText() {
-        return root.findElement(productText).getText();
+        return productText.getText();
     }
 
     public String getImageAttribute() {
-        return root.findElement(productImage).getAttribute("src");
+        return productImage.getAttribute("src");
     }
 
     public String getPrice() {
-        return root.findElement(productPrice)
+        return productPrice
                 .getText()
                 .replace("$", "");
     }

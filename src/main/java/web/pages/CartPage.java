@@ -1,77 +1,90 @@
 package web.pages;
 
+import com.zebrunner.carina.webdriver.decorator.ExtendedWebElement;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.WebDriverWait;
+import org.openqa.selenium.support.FindBy;
 import web.components.ConfirmOrderPopup;
 import web.components.PlaceOrderPopup;
-import web.components.Product;
 
-import java.time.Duration;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class CartPage extends BasePage {
+public class CartPage extends MyAbstractPage {
 
-    protected static String PRODUCTS_CART_XPATH = "//tr[@class='success']";
-    private By totalPrice = By.id("totalp");
-    private By button = By.xpath("//button[text()='Place Order']");
+    protected final static String PRODUCTS_CART_XPATH = "//tr[@class='success']";
+    @FindBy(xpath = PRODUCTS_CART_XPATH)
+    protected static List<ExtendedWebElement> cartProducts;
+    @FindBy(id = "totalp")
+    private ExtendedWebElement totalPrice;
+    @FindBy(xpath = "//button[text()='Place Order']")
+    private ExtendedWebElement button;
+    @FindBy(xpath = "//h2[text()='Products']/..//thead/tr/th")
+    private List<ExtendedWebElement> tableItems;
+    @FindBy(xpath = PRODUCTS_CART_XPATH + "//td/img")
+    private List<ExtendedWebElement> images;
+    @FindBy(xpath = "//a[text()='Delete']")
+    private List<ExtendedWebElement> deleteButtons;
+    @FindBy(xpath = "//div[@class='sweet-alert  showSweetAlert visible']")
+    private ConfirmOrderPopup confirmOrderPopup;
+    @FindBy(xpath = MODAL_XPATH)
+    private PlaceOrderPopup placeOrderPopup;
 
     public CartPage(WebDriver driver) {
         super(driver);
+        waitForElementsListNotEmpty(driver, cartProducts, 10);
     }
 
     public List<String> getTableItems() {
-        return driver.findElements(By.xpath("//h2[text()='Products']/..//thead/tr/th"))
+        return tableItems
                 .stream()
-                .map(WebElement::getText)
+                .map(ExtendedWebElement::getText)
                 .collect(Collectors.toList());
     }
 
     public List<String> getImageAttribute() {
-        return driver.findElements(By.xpath(PRODUCTS_CART_XPATH + "//td/img"))
+        return images
                 .stream()
                 .map(e -> e.getAttribute("src"))
                 .collect(Collectors.toList());
     }
 
     public List<String> getTableValues(int index) {
-        return driver.findElements(By.xpath(String.format(PRODUCTS_CART_XPATH + "[%s]//td", index)))
+        return findExtendedWebElements(By.xpath(String.format(PRODUCTS_CART_XPATH + "[%s]//td", index)))
                 .stream()
-                .map(WebElement::getText)
+                .map(ExtendedWebElement::getText)
                 .collect(Collectors.toList());
     }
 
     public List<String> getProductsValue(int index) {
-        return driver.findElements(By.xpath(String.format(PRODUCTS_CART_XPATH + "//td[%s]", index)))
+        return findExtendedWebElements(By.xpath(String.format(PRODUCTS_CART_XPATH + "//td[%s]", index)))
                 .stream()
-                .map(WebElement::getText)
+                .map(ExtendedWebElement::getText)
                 .collect(Collectors.toList());
     }
 
     public int getProductsSize() {
-        return driver.findElements(By.xpath(PRODUCTS_CART_XPATH)).size();
+        return cartProducts.size();
     }
 
     public String getTotalPrice() {
-        return driver.findElement(totalPrice).getText();
+        return totalPrice.getText();
     }
 
     public PlaceOrderPopup clickPlaceOrderButton() {
-        driver.findElement(button).click();
-        waitForElementIsPresent(driver, MODAL_XPATH, 5);
-        return new PlaceOrderPopup(driver.findElement(By.xpath(MODAL_XPATH)));
+        button.click();
+        waitForUIObjectIsPresent(driver, placeOrderPopup, 5);
+        return placeOrderPopup;
     }
 
     public ConfirmOrderPopup getConfirmOrderPopup() {
-        waitForElementIsPresent(driver, "//div[@class='sweet-alert  showSweetAlert visible']", 5);
-        return new ConfirmOrderPopup(driver.findElement(By.cssSelector("div[class='sweet-alert  showSweetAlert visible']")));
+        waitForUIObjectIsPresent(driver, confirmOrderPopup, 5);
+        return confirmOrderPopup;
     }
 
     public void clickDeleteProduct(int index) {
-        int expectedSize = getProductsSize()-1;
-        driver.findElements(By.xpath("//a[text()='Delete']")).get(index).click();
-        waitForElementListSizeChanged(driver, PRODUCTS_CART_XPATH, expectedSize, 5);
+        int expectedSize = getProductsSize() - 1;
+        deleteButtons.get(index).click();
+        waitForElementListSizeChanged(driver, cartProducts, expectedSize, 5);
     }
 }

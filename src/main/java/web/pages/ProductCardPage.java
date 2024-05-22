@@ -1,40 +1,49 @@
 package web.pages;
 
-import org.openqa.selenium.By;
+import com.zebrunner.carina.webdriver.decorator.ExtendedWebElement;
+import org.openqa.selenium.Alert;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.support.FindBy;
 
-public class ProductCardPage extends BasePage {
+public class ProductCardPage extends MyAbstractPage {
 
-    private By productImage = By.xpath("//div[@class='product-image']//img");
-    private By productName = By.className("name");
-    private By productPrice = By.className("price-container");
-    private By productText = By.xpath("//descendant::strong[text()='Product description']/../p");
-    protected static String addToCartButton = "//a[text()='Add to cart']";
+    @FindBy(xpath = "//div[@class='product-image']//img")
+    private ExtendedWebElement productImage;
+    @FindBy(className = "name")
+    private ExtendedWebElement productName;
+    @FindBy(className = "price-container")
+    private ExtendedWebElement productPrice;
+    @FindBy(xpath = "//descendant::strong[text()='Product description']/../p")
+    private ExtendedWebElement productText;
+    @FindBy(xpath = "//a[text()='Add to cart']")
+    private ExtendedWebElement addToCartButton;
 
     public ProductCardPage(WebDriver driver) {
         super(driver);
     }
 
     public String getName() {
-        return driver.findElement(productName).getText();
+        return productName.getText();
     }
 
     public String getProductPrice() {
-        return driver.findElement(productPrice)
+        return productPrice
                 .getText()
                 .replace("$", "")
                 .replace(" *includes tax", "");
     }
 
     public String getCardText() {
-        return driver.findElement(productText).getText();
+        return productText.getText();
     }
 
     public String getImageAttribute() {
-        return driver.findElement(productImage).getAttribute("src");
+        return productImage.getAttribute("src");
     }
 
     public void clickCartButton() {
-        driver.findElement(By.xpath(addToCartButton)).click();
+        addToCartButton.click();
+        Alert confirm = getDriver().switchTo().alert();
+        confirm.accept();
     }
 }

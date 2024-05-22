@@ -1,19 +1,21 @@
 package web.components;
 
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebElement;
+import com.zebrunner.carina.webdriver.decorator.ExtendedWebElement;
+import com.zebrunner.carina.webdriver.gui.AbstractUIObject;
+import org.openqa.selenium.SearchContext;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.support.FindBy;
 
-public class ConfirmOrderPopup {
+public class ConfirmOrderPopup extends AbstractUIObject {
 
-    protected WebElement root;
+    @FindBy(xpath = ".//h2")
+    private ExtendedWebElement title;
 
-    private By title = By.xpath(".//h2");
-
-    public ConfirmOrderPopup(WebElement root) {
-        this.root = root;
+    public ConfirmOrderPopup(WebDriver driver, SearchContext searchContext) {
+        super(driver, searchContext);
     }
 
     public String getTitle() {
-        return root.findElement(title).getText();
+        return title.getText();
     }
 }

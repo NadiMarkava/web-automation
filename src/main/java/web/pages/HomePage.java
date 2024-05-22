@@ -1,48 +1,51 @@
 package web.pages;
 
+import com.zebrunner.carina.utils.R;
+import com.zebrunner.carina.webdriver.decorator.ExtendedWebElement;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.support.FindBy;
 import web.components.Product;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static web.pages.ProductCardPage.addToCartButton;
-
-public class HomePage extends BasePage {
+public class HomePage extends MyAbstractPage {
 
     public static final Logger LOGGER = LogManager.getLogger(HomePage.class.getName());
-    protected static String PRODUCTS_XPATH = "//div[@class='card h-100']";
+    protected final static String PRODUCTS_XPATH = "//div[@class='card h-100']";
+    @FindBy(xpath = PRODUCTS_XPATH)
+    protected static List<Product> products;
+    @FindBy(xpath = "//li[contains(@class, 'nav-item')]/a[not(contains(@style,'display:none'))]")
+    private List<ExtendedWebElement> navItems;
+    @FindBy(xpath = "//a[text()='Add to cart']")
+    private ExtendedWebElement addToCartButton;
 
     public HomePage(WebDriver driver) {
         super(driver);
-        driver.get("https://demoblaze.com/");
-        waitForElementsListNotEmpty(driver, PRODUCTS_XPATH, 5);
+        setPageAbsoluteURL(R.CONFIG.get("url"));
     }
 
     public List<Product> getProducts() {
-        List<Product> products = driver.findElements(By.xpath(PRODUCTS_XPATH))
-                .stream()
-                .map(e -> new Product(e))
-                .collect(Collectors.toList());
+        waitForUIObjectListIsNotEmpty(driver, products, 10);
         return products;
     }
 
     public List<String> getNavItems() {
-        return driver.findElements(By.xpath("//li[contains(@class, 'nav-item')]/a[not(contains(@style,'display:none'))]"))
+        return navItems
                 .stream()
                 .map(e -> e.getText())
                 .collect(Collectors.toList());
     }
 
     public void selectCategory(String categoryName) {
-        driver.findElement(By.xpath(String.format("//a[text()='CATEGORIES']/../a[text()='%s']", categoryName))).click();
+        findExtendedWebElement(By.xpath(String.format("//a[text()='CATEGORIES']/../a[text()='%s']", categoryName))).click();
     }
 
     public ProductCardPage clickCard(int cardNumber) {
-        driver.findElements(By.xpath(".//h4/a")).get(cardNumber).click();
+        findExtendedWebElements(By.xpath(".//h4/a")).get(cardNumber).click();
         waitForElementIsPresent(driver, addToCartButton, 5);
         return new ProductCardPage(driver);
     }
