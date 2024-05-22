@@ -1,6 +1,11 @@
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.firefox.FirefoxOptions;
+import org.openqa.selenium.remote.RemoteWebDriver;
+import org.testng.ITestContext;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
 import web.components.ConfirmOrderPopup;
 import web.components.PlaceOrderPopup;
@@ -9,20 +14,33 @@ import web.pages.CartPage;
 import web.pages.HomePage;
 import web.pages.ProductCardPage;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+import java.util.logging.Logger;
 
 import static org.testng.Assert.*;
 import static web.enums.Category.*;
-import static web.enums.Navbar.*;
+import static web.enums.Navbar.CART;
+import static web.enums.Navbar.HOME;
 
+@Listeners(AbstractTest.class)
 public class WebTest extends AbstractTest {
+
+    public static final Logger LOGGER = Logger.getLogger(String.valueOf(HomePage.class));
+
+    @BeforeMethod
+    public void openBrowser(ITestContext context) throws MalformedURLException {
+        ChromeOptions chromeOptions = new ChromeOptions();
+        driver = new RemoteWebDriver(new URL("http://localhost:4444"), chromeOptions);
+        context.setAttribute("WebDriver", driver);
+    }
 
     @Test()
     public void testProductData() {
-        WebDriver driver = new ChromeDriver();
         HomePage homePage = new HomePage(driver);
         List<Product> productList = homePage.getProducts();
         int randomProductIndex = new Random().nextInt(productList.size());
@@ -32,12 +50,10 @@ public class WebTest extends AbstractTest {
         assertTrue(product.getImageAttribute().matches("https:\\/\\/demoblaze\\.com\\/imgs\\/.*.jpg"), "Image does not match");
         assertTrue(product.getPrice().matches("[0-9]{3,4}"), "Price does not match");
         verifyFooter(homePage, driver);
-        driver.quit();
     }
 
     @Test()
     public void testProductPage() {
-        WebDriver driver = new ChromeDriver();
         HomePage homePage = new HomePage(driver);
         List<Product> productList = homePage.getProducts();
         int randomProductIndex = new Random().nextInt(productList.size());
@@ -51,12 +67,10 @@ public class WebTest extends AbstractTest {
         assertEquals(productCardPage.getProductPrice(), price, "Prices are not equal");
         assertEquals(productCardPage.getImageAttribute(), image, "Image's attributes are not equal");
         assertTrue(productCardPage.getCardText().contains(text), "Texts are not equal");
-        driver.quit();
     }
 
     @Test()
     public void testCategories() {
-        WebDriver driver = new ChromeDriver();
         HomePage homePage = new HomePage(driver);
         List<Product> products = homePage.getProducts();
         homePage.selectCategory(PHONES.getName());
@@ -68,12 +82,10 @@ public class WebTest extends AbstractTest {
         homePage.selectCategory(MONITORS.getName());
         List<Product> monitors = homePage.getProducts();
         assertNotEquals(monitors, laptops, "Products are the same!");
-        driver.quit();
     }
 
     @Test()
     public void testShoppingCart() {
-        WebDriver driver = new ChromeDriver();
         HomePage homePage = new HomePage(driver);
         List<Product> productList = homePage.getProducts();
         int randomProductIndex = new Random().nextInt(productList.size());
@@ -97,12 +109,10 @@ public class WebTest extends AbstractTest {
         assertEquals(cartPage.getTotalPrice(), price, "Prices are not equal");
         PlaceOrderPopup placeOrder = cartPage.clickPlaceOrderButton();
         assertEquals(placeOrder.getTotalPrice(), price, "Prices are not equal");
-        driver.quit();
     }
 
     @Test()
     public void testDeleteProductFromCart() {
-        WebDriver driver = new ChromeDriver();
         HomePage homePage = new HomePage(driver);
         List<Product> productList = homePage.getProducts();
         selectProduct(productList, homePage, driver);
@@ -111,12 +121,10 @@ public class WebTest extends AbstractTest {
         cartPage.clickDeleteProduct(0);
         assertEquals(cartPage.getProductsSize(), 0, "Sizes are not equal");
         assertEquals(cartPage.getTotalPrice(), "", "Prices are not equal");
-        driver.quit();
     }
 
     @Test()
     public void testAddSomeProducts() {
-        WebDriver driver = new ChromeDriver();
         HomePage homePage = new HomePage(driver);
         List<Product> productList = homePage.getProducts();
         selectProduct(productList, homePage, driver);
@@ -130,12 +138,10 @@ public class WebTest extends AbstractTest {
         assertEquals(cartPage.getTotalPrice(), summ, "Prices are not equal");
         PlaceOrderPopup placeOrder = cartPage.clickPlaceOrderButton();
         assertEquals(placeOrder.getTotalPrice(), summ, "Prices are not equal");
-        driver.quit();
     }
 
     @Test()
     public void testPurchaseComplete() {
-        WebDriver driver = new ChromeDriver();
         HomePage homePage = new HomePage(driver);
         List<Product> productList = homePage.getProducts();
         selectProduct(productList, homePage, driver);
@@ -146,12 +152,10 @@ public class WebTest extends AbstractTest {
         placeOrder.submitModalForm(fields, inputs);
         ConfirmOrderPopup confirmOrderPopup = cartPage.getConfirmOrderPopup();
         assertEquals(confirmOrderPopup.getTitle(), "Thank you for your purchase!", "Prices are not equal");
-        driver.quit();
     }
 
     @Test()
     public void verifyModalForm() {
-        WebDriver driver = new ChromeDriver();
         HomePage homePage = new HomePage(driver);
         List<Product> productList = homePage.getProducts();
         selectProduct(productList, homePage,driver);
@@ -161,6 +165,11 @@ public class WebTest extends AbstractTest {
         List<String> fieldNames = Arrays.asList("Name:", "Country:", "City:", "Credit card:", "Month:", "Year:", "");
         List<String> buttonsNames = Arrays.asList("Close", "Purchase");
         verifyModal(placeOrder, title, fieldNames, buttonsNames);
+    }
+
+    @AfterMethod
+    public void closeBrowser() {
+        driver.quit();
     }
 
     public void selectProduct(List<Product> productList, HomePage homePage, WebDriver driver) {
