@@ -94,7 +94,7 @@ public class WebTest extends AbstractTest {
         assertEquals(cartPage.getImageAttribute(1), image, "Images are not equal");
         assertEquals(cartPage.getProductName(1), name, "Names are not equal");
         assertEquals(cartPage.getProductPrice(1), price, "Prices are not equal");
-        assertTrue(cartPage.isDeleteButtonPresent(1), "Delete button is not present");
+        assertTrue(cartPage.isDeleteButtonPresent(0), "Delete button is not present");
         assertEquals(cartPage.getTotalPrice(), price, "Prices are not equal");
         PlaceOrderPopup placeOrder = cartPage.clickPlaceOrderButton();
         assertEquals(placeOrder.getTotalPrice(), price, "Prices are not equal");
@@ -122,9 +122,9 @@ public class WebTest extends AbstractTest {
         CartPage cartPage = new CartPage(getDriver());
         cartPage.clickNavBar(getDriver(), HOME);
         selectProduct(productList, homePage, getDriver());
-        assertEquals(cartPage.getProductsSize(), 2, "Sizes are not equal");
         String price = cartPage.getProductPrice(1);
         String price_ = cartPage.getProductPrice(2);
+        assertEquals(cartPage.getProductsSize(), 2, "Sizes are not equal");
         String summ = String.valueOf(Integer.parseInt(price) + Integer.parseInt(price_));
         assertEquals(cartPage.getTotalPrice(), summ, "Prices are not equal");
         PlaceOrderPopup placeOrder = cartPage.clickPlaceOrderButton();

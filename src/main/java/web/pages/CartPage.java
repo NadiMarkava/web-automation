@@ -45,7 +45,7 @@ public class CartPage extends MyAbstractPage {
 
     public CartPage(WebDriver driver) {
         super(driver);
-        waitForElementsListNotEmpty(driver, cartProducts, 10);
+        waitUntil((e -> !cartProducts.isEmpty()), 5);
     }
 
     public List<String> getTableItems() {
@@ -60,6 +60,7 @@ public class CartPage extends MyAbstractPage {
     }
 
     public String getProductPrice(int index) {
+        waitUntil((e->productPrice.isElementPresent()), 5);
         return productPrice.format(index).getText();
     }
 
@@ -81,18 +82,18 @@ public class CartPage extends MyAbstractPage {
 
     public PlaceOrderPopup clickPlaceOrderButton() {
         button.click();
-        waitForUIObjectIsPresent(driver, placeOrderPopup, 5);
+        waitUntil((e -> placeOrderPopup.isUIObjectPresent()), 5);
         return placeOrderPopup;
     }
 
     public ConfirmOrderPopup getConfirmOrderPopup() {
-        waitForUIObjectIsPresent(driver, confirmOrderPopup, 5);
+        waitUntil((e -> confirmOrderPopup.isUIObjectPresent()), 5);
         return confirmOrderPopup;
     }
 
     public void clickDeleteProduct(int index) {
         int expectedSize = getProductsSize() - 1;
         deleteButtons.get(index).click();
-        waitForElementListSizeChanged(driver, cartProducts, expectedSize, 5);
+        waitUntil(e -> cartProducts.size() == expectedSize, 5);
     }
 }

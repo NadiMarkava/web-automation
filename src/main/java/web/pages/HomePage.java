@@ -33,7 +33,7 @@ public class HomePage extends MyAbstractPage {
     }
 
     public List<Product> getProducts() {
-        waitForUIObjectListIsNotEmpty(driver, products, 10);
+        waitUntil((e ->!products.isEmpty()), 10);
         return products;
     }
 
@@ -43,7 +43,7 @@ public class HomePage extends MyAbstractPage {
 
     public ProductCardPage clickCard(int cardNumber) {
         cardLinks.get(cardNumber).click();
-        waitForElementIsPresent(driver, addToCartButton, 5);
+        waitUntil(e -> addToCartButton.isElementPresent(), 5);
         return new ProductCardPage(driver);
     }
 }
