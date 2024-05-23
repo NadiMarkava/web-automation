@@ -6,16 +6,25 @@ import org.openqa.selenium.SearchContext;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.FindBy;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 public class FooterComponent extends AbstractUIObject {
 
-    @FindBy(xpath = "//div[@class='caption']/p")
-    private List<ExtendedWebElement> footerTexts;
+    @FindBy(xpath = "//h4[./*[text()='About Us']]")
+    private ExtendedWebElement aboutUsTitle;
 
-    @FindBy(xpath = "//h4/b[text()='%s']")
-    private ExtendedWebElement footerTitle;
+    @FindBy(xpath = "//h4[./*[text()='About Us']]/../p")
+    private ExtendedWebElement aboutUsText;
+
+    @FindBy(xpath = "//h4/b[text()='Get in Touch']")
+    private ExtendedWebElement getInTouchTitle;
+
+    @FindBy(xpath = "//h4[./*[text()='Get in Touch']]/../p[1]")
+    private ExtendedWebElement address;
+
+    @FindBy(xpath = "//h4[./*[text()='Get in Touch']]/../p[2]")
+    private ExtendedWebElement phoneNumber;
+
+    @FindBy(xpath = "//h4[./*[text()='Get in Touch']]/../p[3]")
+    private ExtendedWebElement email;
 
     @FindBy(xpath = "//h4/img/..")
     private ExtendedWebElement footerTextWithLogo;
@@ -24,15 +33,44 @@ public class FooterComponent extends AbstractUIObject {
         super(driver, searchContext);
     }
 
-    public List<String> getFooterTexts() {
-        return footerTexts
-                .stream()
-                .map(t -> t.getText())
-                .collect(Collectors.toList());
+    public FooterComponent(WebDriver driver) {
+        super(driver);
     }
 
-    public boolean isFooterTitlePresent(String title){
-        return footerTitle.format(title).isElementPresent();
+    public String getAboutUsText() {
+        return aboutUsText.getText();
+    }
+
+    public boolean isAboutUsTitlePresent(){
+        return aboutUsTitle.isElementPresent();
+    }
+
+    public boolean isGetInTouchTitlePresent(){
+        return getInTouchTitle.isElementPresent();
+    }
+
+    public boolean isAddressPresent(){
+        return address.isElementPresent();
+    }
+
+    public boolean isPhoneNumberPresent(){
+        return phoneNumber.isElementPresent();
+    }
+
+    public boolean isEmailPresent(){
+        return email.isElementPresent();
+    }
+
+    public String getAddress() {
+        return address.getText();
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber.getText();
+    }
+
+    public String getEmail() {
+        return email.getText();
     }
 
     public String getFooterTextWithLogo() {

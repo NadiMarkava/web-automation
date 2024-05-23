@@ -1,10 +1,9 @@
 package web;
 
+import com.zebrunner.carina.core.IAbstractTest;
 import org.openqa.selenium.WebDriver;
 import org.testng.annotations.Test;
-import web.components.ConfirmOrderPopup;
-import web.components.PlaceOrderPopup;
-import web.components.Product;
+import web.components.*;
 import web.pages.CartPage;
 import web.pages.HomePage;
 import web.pages.ProductCardPage;
@@ -22,7 +21,7 @@ import static web.enums.Navbar.CART;
 import static web.enums.Navbar.HOME;
 
 
-public class WebTest extends AbstractTest {
+public class WebTest implements IAbstractTest {
 
     public static final Logger LOGGER = Logger.getLogger(String.valueOf(WebTest.class));
 
@@ -37,7 +36,7 @@ public class WebTest extends AbstractTest {
         assertTrue(product.getCardText().length() >= 170, "Length does not match");
         assertTrue(product.getImageAttribute().matches("https:\\/\\/demoblaze\\.com\\/imgs\\/.*.jpg"), "Image does not match");
         assertTrue(product.getPrice().matches("[0-9]{3,4}"), "Price does not match");
-        verifyFooter(homePage);
+        verifyFooter();
     }
 
     @Test()
@@ -51,7 +50,7 @@ public class WebTest extends AbstractTest {
         String name = product.getName();
         String price = product.getPrice();
         String text = product.getCardText();
-        ProductCardPage productCardPage = homePage.clickCard(randomProductIndex);
+        ProductCardPage productCardPage = product.clickCard();
         assertEquals(productCardPage.getName(), name, "Names are not equal");
         assertEquals(productCardPage.getProductPrice(), price, "Prices are not equal");
         assertEquals(productCardPage.getImageAttribute(), image, "Image's attributes are not equal");
@@ -84,9 +83,10 @@ public class WebTest extends AbstractTest {
         String image = product.getImageAttribute();
         String name = product.getName();
         String price = product.getPrice();
-        ProductCardPage productCardPage = homePage.clickCard(randomProductIndex);
+        ProductCardPage productCardPage = product.clickCard();
         productCardPage.clickCartButton();
-        homePage.clickNavBar(getDriver(), CART);
+        NavMenu navMenu = homePage.getNavMenuComponent();
+        navMenu.clickNavBar(getDriver(), CART);
         CartPage cartPage = new CartPage(getDriver());
         List<String> columns = new ArrayList<>(Arrays.asList("Pic", "Title", "Price", "x"));
         assertEquals(cartPage.getTableItems(), columns, "Columns are not equal");
@@ -120,7 +120,8 @@ public class WebTest extends AbstractTest {
         List<Product> productList = homePage.getProducts();
         selectProduct(productList, homePage, getDriver());
         CartPage cartPage = new CartPage(getDriver());
-        cartPage.clickNavBar(getDriver(), HOME);
+        NavMenu navMenu = homePage.getNavMenuComponent();
+        navMenu.clickNavBar(getDriver(), HOME);
         selectProduct(productList, homePage, getDriver());
         String price = cartPage.getProductPrice(1);
         String price_ = cartPage.getProductPrice(2);
@@ -139,32 +140,56 @@ public class WebTest extends AbstractTest {
         selectProduct(productList, homePage, getDriver());
         CartPage cartPage = new CartPage(getDriver());
         PlaceOrderPopup placeOrder = cartPage.clickPlaceOrderButton();
-        List<String> fields = new ArrayList<>(Arrays.asList("Name:", "Country:", "City:", "Credit card:", "Month:", "Year:"));
-        List<String> inputs = new ArrayList<>(Arrays.asList("Test", "Test", "Test", "Test", "Test", "Test"));
-        placeOrder.submitModalForm(fields, inputs);
+        placeOrder.submitPlaceOrderForm("Test", "Test", "Test", "Test", "Test", "Test");
         ConfirmOrderPopup confirmOrderPopup = cartPage.getConfirmOrderPopup();
         assertEquals(confirmOrderPopup.getTitle(), "Thank you for your purchase!", "Prices are not equal");
     }
 
     @Test()
-    public void verifyModalForm() {
+    public void verifyPlaceOrderForm() {
         HomePage homePage = new HomePage(getDriver());
         homePage.open();
-        List<Product> productList = homePage.getProducts();
-        selectProduct(productList, homePage, getDriver());
+        NavMenu navMenu = homePage.getNavMenuComponent();
+        navMenu.clickNavBar(getDriver(), CART);
         CartPage cartPage = new CartPage(getDriver());
         PlaceOrderPopup placeOrder = cartPage.clickPlaceOrderButton();
-        String title = "Place order";
-        List<String> fieldNames = Arrays.asList("Name:", "Country:", "City:", "Credit card:", "Month:", "Year:", "");
-        List<String> buttonsNames = Arrays.asList("Close", "Purchase");
-        verifyModal(placeOrder, title, fieldNames, buttonsNames);
+        assertEquals(placeOrder.getTotalPrice(), "Total:", "Total price are not equal");
+        assertEquals(placeOrder.getTitle(), "Place order", "Titles are not equal");
+        assertEquals(placeOrder.getName(), "", "Names are not empty");
+        assertEquals(placeOrder.getCountry(), "", "Countries are not empty");
+        assertEquals(placeOrder.getCity(), "", "Cities are not empty");
+        assertEquals(placeOrder.getCreditCard(), "", "Credit Cards are not empty");
+        assertEquals(placeOrder.getMonth(), "", "Months are not empty");
+        assertEquals(placeOrder.getYear(), "", "Years are not empty");
+        assertTrue(placeOrder.isCloseButtonPresent(), "Close buttons are not present");
+        assertTrue(placeOrder.isPurchaseButtonPresent(), "Purchase buttons are not present");
+    }
+
+    @Test()
+    public void verifyFooter() {
+        HomePage homePage = new HomePage(getDriver());
+        homePage.open();
+        FooterComponent footerComponent = homePage.getFooterComponent();
+        assertTrue(footerComponent.isAboutUsTitlePresent(), "Title 'About Us' is not present");
+        assertTrue(footerComponent.isGetInTouchTitlePresent(), "Title 'Get in touch' is not present");
+        assertEquals(footerComponent.getAboutUsText(), "We believe performance needs to be validated at every stage of the software " +
+                "development cycle and our open source compatible, massively scalable platform " +
+                "makes that a reality.", "Texts are not equal");
+        assertTrue(footerComponent.isAddressPresent(), "Address is not present");
+        assertTrue(footerComponent.isPhoneNumberPresent(), "Phone is not present");
+        assertTrue(footerComponent.isEmailPresent(), "Email is not present");
+        assertEquals(footerComponent.getAddress(), "Address: 2390 El Camino Real", "Addresses are not equal");
+        assertEquals(footerComponent.getPhoneNumber(), "Phone: +440 123456", "Phones are not equal");
+        assertEquals(footerComponent.getEmail(), "Email: demo@blazemeter.com", "Emails are not equal");
+        assertEquals(footerComponent.getFooterTextWithLogo(), "PRODUCT STORE", "Texts are not equal");
     }
 
     public void selectProduct(List<Product> productList, HomePage homePage, WebDriver driver) {
         int randomProductIndex = new Random().nextInt(productList.size());
         Product product = productList.get(randomProductIndex);
-        ProductCardPage productCardPage = homePage.clickCard(randomProductIndex);
+        ProductCardPage productCardPage = product.clickCard();
         productCardPage.clickCartButton();
-        homePage.clickNavBar(driver, CART);
+        NavMenu navMenu = homePage.getNavMenuComponent();
+        navMenu.clickNavBar(driver, CART);
     }
 }

@@ -20,7 +20,7 @@ public class CartPage extends MyAbstractPage {
     private ExtendedWebElement totalPrice;
 
     @FindBy(xpath = "//button[text()='Place Order']")
-    private ExtendedWebElement button;
+    private ExtendedWebElement placeOrderbutton;
 
     @FindBy(xpath = "//h2[text()='Products']/..//thead/tr/th")
     private List<ExtendedWebElement> tableItems;
@@ -69,7 +69,7 @@ public class CartPage extends MyAbstractPage {
     }
 
     public boolean isDeleteButtonPresent(int index) {
-        return deleteButtons.get(index).isElementPresent() && deleteButtons.get(index).isClickable();
+        return deleteButtons.get(index).isElementPresent();
     }
 
     public int getProductsSize() {
@@ -81,7 +81,7 @@ public class CartPage extends MyAbstractPage {
     }
 
     public PlaceOrderPopup clickPlaceOrderButton() {
-        button.click();
+        placeOrderbutton.click();
         waitUntil((e -> placeOrderPopup.isUIObjectPresent()), 5);
         return placeOrderPopup;
     }
