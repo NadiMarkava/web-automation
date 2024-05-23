@@ -9,12 +9,16 @@ public class ProductCardPage extends MyAbstractPage {
 
     @FindBy(xpath = "//div[@class='product-image']//img")
     private ExtendedWebElement productImage;
+
     @FindBy(className = "name")
     private ExtendedWebElement productName;
+
     @FindBy(className = "price-container")
     private ExtendedWebElement productPrice;
+
     @FindBy(xpath = "//descendant::strong[text()='Product description']/../p")
     private ExtendedWebElement productText;
+    
     @FindBy(xpath = "//a[text()='Add to cart']")
     private ExtendedWebElement addToCartButton;
 

@@ -2,7 +2,6 @@ package web.components;
 
 import com.zebrunner.carina.webdriver.decorator.ExtendedWebElement;
 import com.zebrunner.carina.webdriver.gui.AbstractUIObject;
-import org.openqa.selenium.By;
 import org.openqa.selenium.SearchContext;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.FindBy;
@@ -24,6 +23,12 @@ public class AbstractModal extends AbstractUIObject {
     @FindBy(xpath = MODAL + "//div[@class='form-group']/label")
     private List<ExtendedWebElement> fieldsNames;
 
+    @FindBy(xpath = "//label[text()='%s']/../input")
+    private ExtendedWebElement input;
+
+    @FindBy(xpath = MODAL + "//button[text()='%s']")
+    private ExtendedWebElement modalButton;
+
     @FindBy(xpath = MODAL + "//div[@class='modal-footer']//button")
     private List<ExtendedWebElement> buttonsNames;
 
@@ -40,10 +45,10 @@ public class AbstractModal extends AbstractUIObject {
 
     public void typeFields(List<String> fields, List<String> inputs) {
         IntStream.range(0, inputs.size()).forEach(i -> {
-            findExtendedWebElement(By.xpath(String.format("//label[text()='%s']/../input", fields.get(i)))).type(inputs.get(i));
+            input.format(fields.get(i)).type(inputs.get(i));
         });
     }
-    
+
     public List<String> getFieldNames() {
         return fieldsNames
                 .stream()
@@ -64,7 +69,7 @@ public class AbstractModal extends AbstractUIObject {
     }
 
     public void clickModalButton(String button) {
-        findExtendedWebElement(By.xpath(String.format(MODAL + "//button[text()='%s']", button))).click();
+        modalButton.format(button).click();
     }
 
     public boolean isModalPresent() {

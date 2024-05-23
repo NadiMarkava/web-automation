@@ -1,6 +1,5 @@
 package web;
 
-import org.openqa.selenium.Alert;
 import org.openqa.selenium.WebDriver;
 import org.testng.annotations.Test;
 import web.components.ConfirmOrderPopup;
@@ -10,7 +9,6 @@ import web.pages.CartPage;
 import web.pages.HomePage;
 import web.pages.ProductCardPage;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -23,13 +21,13 @@ import static web.enums.Category.*;
 import static web.enums.Navbar.CART;
 import static web.enums.Navbar.HOME;
 
-//@Listeners(AbstractTest.class)
+
 public class WebTest extends AbstractTest {
 
     public static final Logger LOGGER = Logger.getLogger(String.valueOf(WebTest.class));
 
     @Test()
-    public void testProductData() throws IOException {
+    public void testProductData() {
         HomePage homePage = new HomePage(getDriver());
         homePage.open();
         List<Product> productList = homePage.getProducts();
@@ -43,7 +41,7 @@ public class WebTest extends AbstractTest {
     }
 
     @Test()
-    public void testProductPage() throws IOException {
+    public void testProductPage() {
         HomePage homePage = new HomePage(getDriver());
         homePage.open();
         List<Product> productList = homePage.getProducts();
@@ -61,7 +59,7 @@ public class WebTest extends AbstractTest {
     }
 
     @Test()
-    public void testCategories() throws IOException {
+    public void testCategories() {
         HomePage homePage = new HomePage(getDriver());
         homePage.open();
         List<String> allProducts = homePage.getProducts().stream().map(p->p.getName()).collect(Collectors.toList());
@@ -77,7 +75,7 @@ public class WebTest extends AbstractTest {
     }
 
     @Test()
-    public void testShoppingCart() throws IOException {
+    public void testShoppingCart() {
         HomePage homePage = new HomePage(getDriver());
         homePage.open();
         List<Product> productList = homePage.getProducts();
@@ -93,17 +91,17 @@ public class WebTest extends AbstractTest {
         List<String> columns = new ArrayList<>(Arrays.asList("Pic", "Title", "Price", "x"));
         assertEquals(cartPage.getTableItems(), columns, "Columns are not equal");
         assertEquals(cartPage.getProductsSize(), 1, "Sizes are not equal");
-        assertEquals(cartPage.getImageAttribute().get(0), image, "Images are not equal");
-        assertEquals(cartPage.getTableValues(1).get(1), name, "Names are not equal");
-        assertEquals(cartPage.getTableValues(1).get(2), price, "Prices are not equal");
-        assertEquals(cartPage.getTableValues(1).get(3), "Delete", "Buttoms are not equal");
+        assertEquals(cartPage.getImageAttribute(1), image, "Images are not equal");
+        assertEquals(cartPage.getProductName(1), name, "Names are not equal");
+        assertEquals(cartPage.getProductPrice(1), price, "Prices are not equal");
+        assertTrue(cartPage.isDeleteButtonPresent(1), "Delete button is not present");
         assertEquals(cartPage.getTotalPrice(), price, "Prices are not equal");
         PlaceOrderPopup placeOrder = cartPage.clickPlaceOrderButton();
         assertEquals(placeOrder.getTotalPrice(), price, "Prices are not equal");
     }
 
     @Test()
-    public void testDeleteProductFromCart() throws IOException {
+    public void testDeleteProductFromCart() {
         HomePage homePage = new HomePage(getDriver());
         homePage.open();
         List<Product> productList = homePage.getProducts();
@@ -116,7 +114,7 @@ public class WebTest extends AbstractTest {
     }
 
     @Test()
-    public void testAddSomeProducts() throws IOException {
+    public void testAddSomeProducts() {
         HomePage homePage = new HomePage(getDriver());
         homePage.open();
         List<Product> productList = homePage.getProducts();
@@ -125,8 +123,8 @@ public class WebTest extends AbstractTest {
         cartPage.clickNavBar(getDriver(), HOME);
         selectProduct(productList, homePage, getDriver());
         assertEquals(cartPage.getProductsSize(), 2, "Sizes are not equal");
-        String price = cartPage.getTableValues(1).get(2);
-        String price_ = cartPage.getTableValues(2).get(2);
+        String price = cartPage.getProductPrice(1);
+        String price_ = cartPage.getProductPrice(2);
         String summ = String.valueOf(Integer.parseInt(price) + Integer.parseInt(price_));
         assertEquals(cartPage.getTotalPrice(), summ, "Prices are not equal");
         PlaceOrderPopup placeOrder = cartPage.clickPlaceOrderButton();
@@ -134,7 +132,7 @@ public class WebTest extends AbstractTest {
     }
 
     @Test()
-    public void testPurchaseComplete() throws IOException {
+    public void testPurchaseComplete() {
         HomePage homePage = new HomePage(getDriver());
         homePage.open();
         List<Product> productList = homePage.getProducts();
@@ -149,7 +147,7 @@ public class WebTest extends AbstractTest {
     }
 
     @Test()
-    public void verifyModalForm() throws IOException {
+    public void verifyModalForm() {
         HomePage homePage = new HomePage(getDriver());
         homePage.open();
         List<Product> productList = homePage.getProducts();

@@ -1,7 +1,6 @@
 package web.pages;
 
 import com.zebrunner.carina.webdriver.decorator.ExtendedWebElement;
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.FindBy;
 import web.components.ConfirmOrderPopup;
@@ -12,22 +11,36 @@ import java.util.stream.Collectors;
 
 public class CartPage extends MyAbstractPage {
 
-    protected final static String PRODUCTS_CART_XPATH = "//tr[@class='success']";
+    private final String PRODUCTS_CART_XPATH = "//tr[@class='success']";
+
     @FindBy(xpath = PRODUCTS_CART_XPATH)
-    protected static List<ExtendedWebElement> cartProducts;
+    private List<ExtendedWebElement> cartProducts;
+
     @FindBy(id = "totalp")
     private ExtendedWebElement totalPrice;
+
     @FindBy(xpath = "//button[text()='Place Order']")
     private ExtendedWebElement button;
+
     @FindBy(xpath = "//h2[text()='Products']/..//thead/tr/th")
     private List<ExtendedWebElement> tableItems;
-    @FindBy(xpath = PRODUCTS_CART_XPATH + "//td/img")
-    private List<ExtendedWebElement> images;
+
+    @FindBy(xpath = PRODUCTS_CART_XPATH + "[%s]//td/img")
+    private ExtendedWebElement productImg;
+
+    @FindBy(xpath = PRODUCTS_CART_XPATH + "[%s]//td[3]")
+    private ExtendedWebElement productPrice;
+
+    @FindBy(xpath = PRODUCTS_CART_XPATH + "[%s]//td[2]")
+    private ExtendedWebElement productName;
+
     @FindBy(xpath = "//a[text()='Delete']")
     private List<ExtendedWebElement> deleteButtons;
+
     @FindBy(xpath = "//div[@class='sweet-alert  showSweetAlert visible']")
     private ConfirmOrderPopup confirmOrderPopup;
-    @FindBy(xpath = MODAL_XPATH)
+
+    @FindBy(xpath = "//div[@class='modal fade show']//div[@class='modal-content']")
     private PlaceOrderPopup placeOrderPopup;
 
     public CartPage(WebDriver driver) {
@@ -42,25 +55,20 @@ public class CartPage extends MyAbstractPage {
                 .collect(Collectors.toList());
     }
 
-    public List<String> getImageAttribute() {
-        return images
-                .stream()
-                .map(e -> e.getAttribute("src"))
-                .collect(Collectors.toList());
+    public String getImageAttribute(int index) {
+        return productImg.format(index).getAttribute("src");
     }
 
-    public List<String> getTableValues(int index) {
-        return findExtendedWebElements(By.xpath(String.format(PRODUCTS_CART_XPATH + "[%s]//td", index)))
-                .stream()
-                .map(ExtendedWebElement::getText)
-                .collect(Collectors.toList());
+    public String getProductPrice(int index) {
+        return productPrice.format(index).getText();
     }
 
-    public List<String> getProductsValue(int index) {
-        return findExtendedWebElements(By.xpath(String.format(PRODUCTS_CART_XPATH + "//td[%s]", index)))
-                .stream()
-                .map(ExtendedWebElement::getText)
-                .collect(Collectors.toList());
+    public String getProductName(int index) {
+        return productName.format(index).getText();
+    }
+
+    public boolean isDeleteButtonPresent(int index) {
+        return deleteButtons.get(index).isElementPresent() && deleteButtons.get(index).isClickable();
     }
 
     public int getProductsSize() {
