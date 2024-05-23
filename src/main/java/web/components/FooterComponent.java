@@ -17,13 +17,13 @@ public class FooterComponent extends AbstractUIObject {
     @FindBy(xpath = "//h4/b[text()='Get in Touch']")
     private ExtendedWebElement getInTouchTitle;
 
-    @FindBy(xpath = "//h4[./*[text()='Get in Touch']]/../p[1]")
+    @FindBy(xpath = "//h4[./*[text()='Get in Touch']]/../p[contains(text(), 'Address')]")
     private ExtendedWebElement address;
 
-    @FindBy(xpath = "//h4[./*[text()='Get in Touch']]/../p[2]")
+    @FindBy(xpath = "//h4[./*[text()='Get in Touch']]/../p[contains(text(), 'Phone')]")
     private ExtendedWebElement phoneNumber;
 
-    @FindBy(xpath = "//h4[./*[text()='Get in Touch']]/../p[3]")
+    @FindBy(xpath = "//h4[./*[text()='Get in Touch']]/../p[contains(text(), 'Email')]")
     private ExtendedWebElement email;
 
     @FindBy(xpath = "//h4/img/..")
@@ -61,7 +61,7 @@ public class FooterComponent extends AbstractUIObject {
         return email.isElementPresent();
     }
 
-    public String getAddress() {
+    public String getAddressText() {
         return address.getText();
     }
 

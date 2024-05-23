@@ -6,7 +6,7 @@ import org.openqa.selenium.support.FindBy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import web.components.FooterComponent;
-import web.components.NavMenu;
+import web.components.NavBarMenuOption;
 
 import java.lang.invoke.MethodHandles;
 
@@ -18,7 +18,7 @@ public class MyAbstractPage extends AbstractPage {
     private FooterComponent footerComponent;
 
     @FindBy(id = "navbarExample")
-    private NavMenu navMenuComponent;
+    private NavBarMenuOption navMenuComponent;
 
     public MyAbstractPage(WebDriver driver) {
         super(driver);
@@ -28,7 +28,7 @@ public class MyAbstractPage extends AbstractPage {
         return footerComponent;
     }
 
-    public NavMenu getNavMenuComponent() {
+    public NavBarMenuOption getNavMenuComponent() {
         return navMenuComponent;
     }
 }

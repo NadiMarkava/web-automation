@@ -8,7 +8,7 @@ public class GetPropertyUtil {
 
     public static String getValue(String key) throws IOException {
         Properties properties = new Properties();
-        properties.load(new FileInputStream("src/main/java/resources/data.properties"));
+        properties.load(new FileInputStream("src/main/resources/data.properties"));
         return properties.getProperty(key);
     }
 }

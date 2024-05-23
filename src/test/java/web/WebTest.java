@@ -1,29 +1,35 @@
 package web;
 
 import com.zebrunner.carina.core.IAbstractTest;
-import org.openqa.selenium.WebDriver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.testng.ITestListener;
+import org.testng.ITestResult;
+import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
 import web.components.*;
 import web.pages.CartPage;
 import web.pages.HomePage;
 import web.pages.ProductCardPage;
 
+import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import static org.testng.Assert.*;
 import static web.enums.Category.*;
 import static web.enums.Navbar.CART;
 import static web.enums.Navbar.HOME;
+import static web.utils.ScreenshotUtil.takeScreenshot;
 
+@Listeners(WebTest.class)
+public class WebTest implements IAbstractTest, ITestListener {
 
-public class WebTest implements IAbstractTest {
-
-    public static final Logger LOGGER = Logger.getLogger(String.valueOf(WebTest.class));
+    private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     @Test()
     public void testProductData() {
@@ -36,7 +42,6 @@ public class WebTest implements IAbstractTest {
         assertTrue(product.getCardText().length() >= 170, "Length does not match");
         assertTrue(product.getImageAttribute().matches("https:\\/\\/demoblaze\\.com\\/imgs\\/.*.jpg"), "Image does not match");
         assertTrue(product.getPrice().matches("[0-9]{3,4}"), "Price does not match");
-        verifyFooter();
     }
 
     @Test()
@@ -85,8 +90,8 @@ public class WebTest implements IAbstractTest {
         String price = product.getPrice();
         ProductCardPage productCardPage = product.clickCard();
         productCardPage.clickCartButton();
-        NavMenu navMenu = homePage.getNavMenuComponent();
-        navMenu.clickNavBar(getDriver(), CART);
+        NavBarMenuOption navMenu = homePage.getNavMenuComponent();
+        navMenu.clickNavBar(CART);
         CartPage cartPage = new CartPage(getDriver());
         List<String> columns = new ArrayList<>(Arrays.asList("Pic", "Title", "Price", "x"));
         assertEquals(cartPage.getTableItems(), columns, "Columns are not equal");
@@ -105,7 +110,7 @@ public class WebTest implements IAbstractTest {
         HomePage homePage = new HomePage(getDriver());
         homePage.open();
         List<Product> productList = homePage.getProducts();
-        selectProduct(productList, homePage, getDriver());
+        selectProduct(productList);
         CartPage cartPage = new CartPage(getDriver());
         assertEquals(cartPage.getProductsSize(), 1, "Sizes are not equal");
         cartPage.clickDeleteProduct(0);
@@ -118,11 +123,11 @@ public class WebTest implements IAbstractTest {
         HomePage homePage = new HomePage(getDriver());
         homePage.open();
         List<Product> productList = homePage.getProducts();
-        selectProduct(productList, homePage, getDriver());
+        selectProduct(productList);
         CartPage cartPage = new CartPage(getDriver());
-        NavMenu navMenu = homePage.getNavMenuComponent();
-        navMenu.clickNavBar(getDriver(), HOME);
-        selectProduct(productList, homePage, getDriver());
+        NavBarMenuOption navMenu = homePage.getNavMenuComponent();
+        navMenu.clickNavBar(HOME);
+        selectProduct(productList);
         String price = cartPage.getProductPrice(1);
         String price_ = cartPage.getProductPrice(2);
         assertEquals(cartPage.getProductsSize(), 2, "Sizes are not equal");
@@ -137,7 +142,7 @@ public class WebTest implements IAbstractTest {
         HomePage homePage = new HomePage(getDriver());
         homePage.open();
         List<Product> productList = homePage.getProducts();
-        selectProduct(productList, homePage, getDriver());
+        selectProduct(productList);
         CartPage cartPage = new CartPage(getDriver());
         PlaceOrderPopup placeOrder = cartPage.clickPlaceOrderButton();
         placeOrder.submitPlaceOrderForm("Test", "Test", "Test", "Test", "Test", "Test");
@@ -149,8 +154,8 @@ public class WebTest implements IAbstractTest {
     public void verifyPlaceOrderForm() {
         HomePage homePage = new HomePage(getDriver());
         homePage.open();
-        NavMenu navMenu = homePage.getNavMenuComponent();
-        navMenu.clickNavBar(getDriver(), CART);
+        NavBarMenuOption navMenu = homePage.getNavMenuComponent();
+        navMenu.clickNavBar(CART);
         CartPage cartPage = new CartPage(getDriver());
         PlaceOrderPopup placeOrder = cartPage.clickPlaceOrderButton();
         assertEquals(placeOrder.getTotalPrice(), "Total:", "Total price are not equal");
@@ -178,18 +183,32 @@ public class WebTest implements IAbstractTest {
         assertTrue(footerComponent.isAddressPresent(), "Address is not present");
         assertTrue(footerComponent.isPhoneNumberPresent(), "Phone is not present");
         assertTrue(footerComponent.isEmailPresent(), "Email is not present");
-        assertEquals(footerComponent.getAddress(), "Address: 2390 El Camino Real", "Addresses are not equal");
+        assertEquals(footerComponent.getAddressText(), "Address: 2390 El Camino Real", "Addresses are not equal");
         assertEquals(footerComponent.getPhoneNumber(), "Phone: +440 123456", "Phones are not equal");
         assertEquals(footerComponent.getEmail(), "Email: demo@blazemeter.com", "Emails are not equal");
         assertEquals(footerComponent.getFooterTextWithLogo(), "PRODUCT STORE", "Texts are not equal");
     }
 
-    public void selectProduct(List<Product> productList, HomePage homePage, WebDriver driver) {
+    public void selectProduct(List<Product> productList) {
+        HomePage homePage = new HomePage(getDriver());
         int randomProductIndex = new Random().nextInt(productList.size());
         Product product = productList.get(randomProductIndex);
         ProductCardPage productCardPage = product.clickCard();
         productCardPage.clickCartButton();
-        NavMenu navMenu = homePage.getNavMenuComponent();
-        navMenu.clickNavBar(driver, CART);
+        NavBarMenuOption navMenu = homePage.getNavMenuComponent();
+        navMenu.clickNavBar(CART);
+    }
+
+    @Override
+    public void onTestFailure(ITestResult result) {
+        LOGGER.debug("CarinaListener->onTestFailure");
+        String methodName = result.getName().toString().trim() + result.id();
+        if (ITestResult.FAILURE == result.getStatus()) {
+            try {
+                takeScreenshot(methodName, getDriver());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 }
