@@ -43,11 +43,7 @@ public class AbstractModal extends AbstractUIObject {
             findExtendedWebElement(By.xpath(String.format("//label[text()='%s']/../input", fields.get(i)))).type(inputs.get(i));
         });
     }
-
-    public String getFieldText(String fieldName) {
-        return findExtendedWebElement(By.xpath(String.format("//label[text()='%s']/../input", fieldName))).getText();
-    }
-
+    
     public List<String> getFieldNames() {
         return fieldsNames
                 .stream()
@@ -60,13 +56,6 @@ public class AbstractModal extends AbstractUIObject {
                 .stream()
                 .map(e -> e.getText())
                 .collect(Collectors.toList());
-    }
-
-    public void typeField(List<String> fields, List<String> inputs) {
-        IntStream.range(0, inputs.size()).forEach(i -> {
-            findExtendedWebElement(By.xpath(String.format("//label[text()='%s']/../input", fields.get(i))))
-                    .type(inputs.get(i));
-        });
     }
 
     public void submitModalForm(List<String> fields, List<String> inputs) {

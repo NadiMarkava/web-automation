@@ -47,27 +47,6 @@ public class AbstractTest implements ITestListener, IAbstractTest {
         assertFalse(abstractModal.isModalPresent(), "Modal is present");
     }
 
-    @Test
-    public void test() {
-        HomePage homePage = new HomePage(getDriver());
-        homePage.open();
-        Assert.assertTrue(homePage.isPageOpened(), "Home page is not opened");
-    }
-
-//    @BeforeTest
-//    public void setUp() {
-//        HomePage home = new HomePage(getDriver());
-//        home.open();
-//    }
-
-//    @BeforeTest
-//    public void setUp(ITestContext context) throws IOException {
-//        ChromeOptions chromeOptions = new ChromeOptions();
-//        driver = new RemoteWebDriver(new URL("http://localhost:4444"), chromeOptions);
-//        context.setAttribute("WebDriver", driver);
-//        HomePage homePage=new HomePage(driver);
-//    }
-
     @Override
     public void onTestFailure(ITestResult result) {
         String methodName = result.getName().trim() + result.id();
@@ -80,9 +59,4 @@ public class AbstractTest implements ITestListener, IAbstractTest {
             throw new RuntimeException(e);
         }
     }
-
-//    @AfterTest
-//    public void closeBrowser() {
-//        driver.quit();
-//    }
 }
