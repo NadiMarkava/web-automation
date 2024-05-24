@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
+import java.nio.file.Paths;
 
 public class ScreenshotUtil {
 
@@ -17,7 +18,7 @@ public class ScreenshotUtil {
 
     public static void takeScreenshot(String methodName, WebDriver driver) throws IOException {
         File file = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
-        File destFile = new File(GetPropertyUtil.getValue("filePath") + methodName + ".jpg");
+        File destFile = new File(Paths.get("screenshots/ ") + methodName + ".jpg");
         FileUtils.copyFile(file, destFile);
     }
 }
