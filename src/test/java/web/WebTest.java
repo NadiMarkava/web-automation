@@ -1,180 +1,197 @@
 package web;
 
-import com.zebrunner.carina.core.IAbstractTest;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.testng.ITestListener;
-import org.testng.ITestResult;
-import org.testng.annotations.Listeners;
+import org.apache.commons.lang3.StringUtils;
 import org.testng.annotations.Test;
-import web.components.*;
+import web.components.ConfirmOrderPopup;
+import web.components.Footer;
+import web.components.PlaceOrderPopup;
+import web.components.Product;
 import web.pages.CartPage;
 import web.pages.HomePage;
-import web.pages.ProductCardPage;
+import web.pages.ProductDetailCardPage;
 
-import java.io.IOException;
-import java.lang.invoke.MethodHandles;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 
 import static org.testng.Assert.*;
 import static web.enums.Category.*;
-import static web.enums.Navbar.CART;
-import static web.enums.Navbar.HOME;
-import static web.utils.ScreenshotUtil.takeScreenshot;
+import static web.enums.NavBarMenuOption.CART;
+import static web.enums.NavBarMenuOption.HOME;
 
-@Listeners(WebTest.class)
-public class WebTest implements IAbstractTest, ITestListener {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+public class WebTest extends BaseDemoBlazeTest {
 
     @Test()
-    public void testProductData() {
+    public void verifyProductDataTest() {
         HomePage homePage = new HomePage(getDriver());
         homePage.open();
+        homePage.waitUntilProductsLoaded();
         List<Product> productList = homePage.getProducts();
         int randomProductIndex = new Random().nextInt(productList.size());
         Product product = productList.get(randomProductIndex);
-        assertTrue(product.getName().matches("[a-zA-Z0-9]+\\s[a-zA-Z0-9]+\\s[a-zA-Z0-9][a-zA-Z0-9_.-]*$"), "Name does not match" + product.getName());
+        assertTrue(product.getNameText().matches("[a-zA-Z0-9]+\\s[a-zA-Z0-9]+\\s[a-zA-Z0-9][a-zA-Z0-9_.-]*$"), "Name does not match" + product.getNameText());
         assertTrue(product.getCardText().length() >= 170, "Length does not match");
         assertTrue(product.getImageAttribute().matches("https:\\/\\/demoblaze\\.com\\/imgs\\/.*.jpg"), "Image does not match");
-        assertTrue(product.getPrice().matches("[0-9]{3,4}"), "Price does not match");
+        assertTrue(product.getPriceText().matches("[0-9]{3,4}"), "Price does not match");
     }
 
     @Test()
-    public void testProductPage() {
+    public void verifyProductPageTest() {
         HomePage homePage = new HomePage(getDriver());
         homePage.open();
+        homePage.waitUntilProductsLoaded();
         List<Product> productList = homePage.getProducts();
         int randomProductIndex = new Random().nextInt(productList.size());
         Product product = productList.get(randomProductIndex);
         String image = product.getImageAttribute();
-        String name = product.getName();
-        String price = product.getPrice();
+        String name = product.getNameText();
+        String price = product.getPriceText();
         String text = product.getCardText();
-        ProductCardPage productCardPage = product.clickCard();
-        assertEquals(productCardPage.getName(), name, "Names are not equal");
-        assertEquals(productCardPage.getProductPrice(), price, "Prices are not equal");
+        ProductDetailCardPage productCardPage = product.clickCard();
+        assertEquals(productCardPage.getNameText(), name, "Names are not equal");
+        assertEquals(productCardPage.getProductPriceText(), price, "Prices are not equal");
         assertEquals(productCardPage.getImageAttribute(), image, "Image's attributes are not equal");
-        assertTrue(productCardPage.getCardText().contains(text), "Texts are not equal");
+        assertTrue(productCardPage.getCardDescription().contains(text), "Texts are not equal");
     }
 
     @Test()
-    public void testCategories() {
+    public void verifyCategoriesTest() {
         HomePage homePage = new HomePage(getDriver());
         homePage.open();
-        List<String> allProducts = homePage.getProducts().stream().map(p->p.getName()).collect(Collectors.toList());
-        homePage.selectCategory(PHONES.getName());
-        List<String> phoneProducts = homePage.getProducts().stream().map(p->p.getName()).collect(Collectors.toList());
+        homePage.waitUntilProductsLoaded();
+        List<String> allProducts = homePage.getProducts().stream().map(p -> p.getNameText()).collect(Collectors.toList());
+        homePage.clickCategory(PHONES.getName());
+        List<String> phoneProducts = homePage.getProducts().stream().map(p -> p.getNameText()).collect(Collectors.toList());
         assertNotEquals(phoneProducts, allProducts, "Products are the same!");
-        homePage.selectCategory(LAPTOPS.getName());
-        List<String> laptopProducts = homePage.getProducts().stream().map(p->p.getName()).collect(Collectors.toList());
+        homePage.clickCategory(LAPTOPS.getName());
+        List<String> laptopProducts = homePage.getProducts().stream().map(p -> p.getNameText()).collect(Collectors.toList());
         assertNotEquals(laptopProducts, phoneProducts, "Products are the same!");
-        homePage.selectCategory(MONITORS.getName());
-        List<String> monitorProducts = homePage.getProducts().stream().map(p->p.getName()).collect(Collectors.toList());
+        homePage.clickCategory(MONITORS.getName());
+        List<String> monitorProducts = homePage.getProducts().stream().map(p -> p.getNameText()).collect(Collectors.toList());
         assertNotEquals(monitorProducts, laptopProducts, "Products are the same!");
     }
 
     @Test()
-    public void testShoppingCart() {
+    public void verifyShoppingCartTest() {
         HomePage homePage = new HomePage(getDriver());
         homePage.open();
+        homePage.waitUntilProductsLoaded();
         List<Product> productList = homePage.getProducts();
         int randomProductIndex = new Random().nextInt(productList.size());
         Product product = productList.get(randomProductIndex);
         String image = product.getImageAttribute();
-        String name = product.getName();
-        String price = product.getPrice();
-        ProductCardPage productCardPage = product.clickCard();
-        productCardPage.clickCartButton();
-        NavBarMenuOption navMenu = homePage.getNavMenuComponent();
-        navMenu.clickNavBar(CART);
+        String name = product.getNameText();
+        String price = product.getPriceText();
+        ProductDetailCardPage productCardPage = product.clickCard();
+        productCardPage.clickAddToCartButton();
+        homePage.getNavBar().clickNavBarMenuOption(CART);
         CartPage cartPage = new CartPage(getDriver());
-        List<String> columns = new ArrayList<>(Arrays.asList("Pic", "Title", "Price", "x"));
-        assertEquals(cartPage.getTableItems(), columns, "Columns are not equal");
+        cartPage.waitUntilProductsLoaded();
+        assertTrue(cartPage.isPicColumnPresent(), "Pic column is not present");
+        assertTrue(cartPage.isTitleColumnPresent(), "Title column is not present");
+        assertTrue(cartPage.isPriceColumnPresent(), "Price column is not present");
+        assertTrue(cartPage.isDeleteColumnPresent(), "Delete column is not present");
         assertEquals(cartPage.getProductsSize(), 1, "Sizes are not equal");
         assertEquals(cartPage.getImageAttribute(1), image, "Images are not equal");
-        assertEquals(cartPage.getProductName(1), name, "Names are not equal");
-        assertEquals(cartPage.getProductPrice(1), price, "Prices are not equal");
-        assertTrue(cartPage.isDeleteButtonPresent(0), "Delete button is not present");
-        assertEquals(cartPage.getTotalPrice(), price, "Prices are not equal");
+        assertEquals(cartPage.getProductNameText(1), name, "Names are not equal");
+        assertEquals(cartPage.getProductPriceText(1), price, "Prices are not equal");
+        assertTrue(cartPage.isDeleteButtonPresent(1), "Delete button is not present");
+        assertEquals(cartPage.getTotalPriceText(), price, "Prices are not equal");
         PlaceOrderPopup placeOrder = cartPage.clickPlaceOrderButton();
-        assertEquals(placeOrder.getTotalPrice(), price, "Prices are not equal");
+        assertEquals(placeOrder.getTotalPriceText(), price, "Prices are not equal");
     }
 
     @Test()
-    public void testDeleteProductFromCart() {
+    public void verifyProductCanBeDeletedFromCartTest() {
         HomePage homePage = new HomePage(getDriver());
         homePage.open();
+        homePage.waitUntilProductsLoaded();
         List<Product> productList = homePage.getProducts();
-        selectProduct(productList);
+        selectRandomProduct(productList);
+        homePage.getNavBar().clickNavBarMenuOption(CART);
         CartPage cartPage = new CartPage(getDriver());
+        cartPage.waitUntilProductsLoaded();
         assertEquals(cartPage.getProductsSize(), 1, "Sizes are not equal");
-        cartPage.clickDeleteProduct(0);
+        cartPage.clickDeleteButton(1);
         assertEquals(cartPage.getProductsSize(), 0, "Sizes are not equal");
-        assertEquals(cartPage.getTotalPrice(), "", "Prices are not equal");
+        assertEquals(cartPage.getTotalPriceText(), "", "Prices are not equal");
     }
 
     @Test()
-    public void testAddSomeProducts() {
+    public void verifyMultipleProductsCanBeAddedTest() {
         HomePage homePage = new HomePage(getDriver());
         homePage.open();
+        homePage.waitUntilProductsLoaded();
         List<Product> productList = homePage.getProducts();
-        selectProduct(productList);
+        selectRandomProduct(productList);
+        homePage.getNavBar().clickNavBarMenuOption(HOME);
+        selectRandomProduct(productList);
+        homePage.getNavBar().clickNavBarMenuOption(CART);
         CartPage cartPage = new CartPage(getDriver());
-        NavBarMenuOption navMenu = homePage.getNavMenuComponent();
-        navMenu.clickNavBar(HOME);
-        selectProduct(productList);
-        String price = cartPage.getProductPrice(1);
-        String price_ = cartPage.getProductPrice(2);
+        cartPage.waitUntilProductsLoaded();
+        String price = cartPage.getProductPriceText(1);
+        String price_ = cartPage.getProductPriceText(2);
         assertEquals(cartPage.getProductsSize(), 2, "Sizes are not equal");
         String summ = String.valueOf(Integer.parseInt(price) + Integer.parseInt(price_));
-        assertEquals(cartPage.getTotalPrice(), summ, "Prices are not equal");
+        assertEquals(cartPage.getTotalPriceText(), summ, "Prices are not equal");
         PlaceOrderPopup placeOrder = cartPage.clickPlaceOrderButton();
-        assertEquals(placeOrder.getTotalPrice(), summ, "Prices are not equal");
+        assertEquals(placeOrder.getTotalPriceText(), summ, "Prices are not equal");
     }
 
     @Test()
-    public void testPurchaseComplete() {
+    public void purchaseCompleteTest() {
+        String name = "Test";
+        String creditCard = "Test";
         HomePage homePage = new HomePage(getDriver());
         homePage.open();
+        homePage.waitUntilProductsLoaded();
         List<Product> productList = homePage.getProducts();
-        selectProduct(productList);
+        selectRandomProduct(productList);
+        homePage.getNavBar().clickNavBarMenuOption(CART);
         CartPage cartPage = new CartPage(getDriver());
+        cartPage.waitUntilProductsLoaded();
+        String price = cartPage.getProductPriceText(1);
         PlaceOrderPopup placeOrder = cartPage.clickPlaceOrderButton();
-        placeOrder.submitPlaceOrderForm("Test", "Test", "Test", "Test", "Test", "Test");
-        ConfirmOrderPopup confirmOrderPopup = cartPage.getConfirmOrderPopup();
-        assertEquals(confirmOrderPopup.getTitle(), "Thank you for your purchase!", "Prices are not equal");
+        ConfirmOrderPopup confirmOrderPopup = placeOrder.submitPlaceOrderForm(name, "Test", "Test", creditCard, "Test", "Test");
+        assertTrue(confirmOrderPopup.isSuccessIconPresent(), "Success icon is not present");
+        String text = confirmOrderPopup.getConfirmText();
+        String id = StringUtils.substringBetween(text, "Id: ", "\n");
+        String amount = StringUtils.substringBetween(text, "Amount: ", "\n");
+        String cardNumber = StringUtils.substringBetween(text, "Card Number: ", "\n");
+        String cardName = StringUtils.substringBetween(text, "Name: ", "\n");
+        String date = StringUtils.substringAfter(text, "Date: ");
+        assertTrue(id.matches("[0-9]{7}"), "Id does not match");
+        assertEquals(amount, price + " USD", "Prices are not equal");
+        assertEquals(cardName, name, "Names are not equal");
+        assertEquals(cardNumber, creditCard, "Credit cards are not equal");
+        assertEquals(date.matches("[0-9]{1,2}\\/[0-9]{1,2}\\/[0-9]{4}"), "Date does not match");
+        assertTrue(confirmOrderPopup.isOkButtonPresent(), "Success icon is not present");
     }
 
     @Test()
-    public void verifyPlaceOrderForm() {
+    public void placeOrderFormTest() {
         HomePage homePage = new HomePage(getDriver());
         homePage.open();
-        NavBarMenuOption navMenu = homePage.getNavMenuComponent();
-        navMenu.clickNavBar(CART);
+        homePage.getNavBar().clickNavBarMenuOption(CART);
         CartPage cartPage = new CartPage(getDriver());
         PlaceOrderPopup placeOrder = cartPage.clickPlaceOrderButton();
-        assertEquals(placeOrder.getTotalPrice(), "Total:", "Total price are not equal");
-        assertEquals(placeOrder.getTitle(), "Place order", "Titles are not equal");
-        assertEquals(placeOrder.getName(), "", "Names are not empty");
-        assertEquals(placeOrder.getCountry(), "", "Countries are not empty");
-        assertEquals(placeOrder.getCity(), "", "Cities are not empty");
-        assertEquals(placeOrder.getCreditCard(), "", "Credit Cards are not empty");
-        assertEquals(placeOrder.getMonth(), "", "Months are not empty");
-        assertEquals(placeOrder.getYear(), "", "Years are not empty");
-        assertTrue(placeOrder.isCloseButtonPresent(), "Close buttons are not present");
-        assertTrue(placeOrder.isPurchaseButtonPresent(), "Purchase buttons are not present");
+        assertEquals(placeOrder.getTotalPriceText(), "Total:", "Total price are not equal");
+        assertTrue(placeOrder.isNameFieldPresent(), "Name is not present");
+        assertTrue(placeOrder.isCountryFieldPresent(), "Country is not present");
+        assertTrue(placeOrder.isCityFieldPresent(), "City is not present");
+        assertTrue(placeOrder.isCreditCardFieldPresent(), "Credit Card is not present");
+        assertTrue(placeOrder.isMonthFieldPresent(), "Month is not present");
+        assertTrue(placeOrder.isYearFieldPresent(), "Year is not present");
+        assertTrue(placeOrder.isCloseButtonPresent(), "Close button is not present");
+        assertTrue(placeOrder.isPurchaseButtonPresent(), "Purchase button is not present");
     }
 
     @Test()
-    public void verifyFooter() {
+    public void verifyFooterTest() {
         HomePage homePage = new HomePage(getDriver());
         homePage.open();
-        FooterComponent footerComponent = homePage.getFooterComponent();
+        Footer footerComponent = homePage.getFooter();
         assertTrue(footerComponent.isAboutUsTitlePresent(), "Title 'About Us' is not present");
         assertTrue(footerComponent.isGetInTouchTitlePresent(), "Title 'Get in touch' is not present");
         assertEquals(footerComponent.getAboutUsText(), "We believe performance needs to be validated at every stage of the software " +
@@ -184,31 +201,16 @@ public class WebTest implements IAbstractTest, ITestListener {
         assertTrue(footerComponent.isPhoneNumberPresent(), "Phone is not present");
         assertTrue(footerComponent.isEmailPresent(), "Email is not present");
         assertEquals(footerComponent.getAddressText(), "Address: 2390 El Camino Real", "Addresses are not equal");
-        assertEquals(footerComponent.getPhoneNumber(), "Phone: +440 123456", "Phones are not equal");
-        assertEquals(footerComponent.getEmail(), "Email: demo@blazemeter.com", "Emails are not equal");
-        assertEquals(footerComponent.getFooterTextWithLogo(), "PRODUCT STORE", "Texts are not equal");
+        assertEquals(footerComponent.getPhoneNumberText(), "Phone: +440 123456", "Phones are not equal");
+        assertEquals(footerComponent.getEmailText(), "Email: demo@blazemeter.com", "Emails are not equal");
+        assertEquals(footerComponent.getFooterSectionWithLogoText(), "PRODUCT STORE", "Texts are not equal");
     }
 
-    public void selectProduct(List<Product> productList) {
+    public void selectRandomProduct(List<Product> productList) {
         HomePage homePage = new HomePage(getDriver());
         int randomProductIndex = new Random().nextInt(productList.size());
         Product product = productList.get(randomProductIndex);
-        ProductCardPage productCardPage = product.clickCard();
-        productCardPage.clickCartButton();
-        NavBarMenuOption navMenu = homePage.getNavMenuComponent();
-        navMenu.clickNavBar(CART);
-    }
-
-    @Override
-    public void onTestFailure(ITestResult result) {
-        LOGGER.debug("CarinaListener->onTestFailure");
-        String methodName = result.getName().toString().trim() + result.id();
-        if (ITestResult.FAILURE == result.getStatus()) {
-            try {
-                takeScreenshot(methodName, getDriver());
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
+        ProductDetailCardPage productCardPage = product.clickCard();
+        productCardPage.clickAddToCartButton();
     }
 }

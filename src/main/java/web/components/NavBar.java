@@ -5,23 +5,18 @@ import com.zebrunner.carina.webdriver.gui.AbstractUIObject;
 import org.openqa.selenium.SearchContext;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.FindBy;
-import web.enums.Navbar;
+import web.enums.NavBarMenuOption;
 
-import java.util.List;
-
-public class NavBarMenuOption extends AbstractUIObject {
-
-    @FindBy(xpath = "//li[contains(@class, 'nav-item')]")
-    private List<ExtendedWebElement> navMenuItems;
+public class NavBar extends AbstractUIObject {
 
     @FindBy(xpath = "//li[contains(@class, 'nav-item')]/a[text()='%s']")
     private ExtendedWebElement navMenuItem;
 
-    public NavBarMenuOption(WebDriver driver, SearchContext searchContext) {
+    public NavBar(WebDriver driver, SearchContext searchContext) {
         super(driver, searchContext);
     }
 
-    public void clickNavBar(Navbar name) {
-        navMenuItem.format(name.getName()).click();
+    public void clickNavBarMenuOption(NavBarMenuOption menuOption) {
+        navMenuItem.format(menuOption.getName()).click();
     }
 }

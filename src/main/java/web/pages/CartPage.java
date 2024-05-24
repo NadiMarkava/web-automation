@@ -1,32 +1,34 @@
 package web.pages;
 
 import com.zebrunner.carina.webdriver.decorator.ExtendedWebElement;
+import com.zebrunner.carina.webdriver.decorator.PageOpeningStrategy;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.FindBy;
-import web.components.ConfirmOrderPopup;
 import web.components.PlaceOrderPopup;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class CartPage extends MyAbstractPage {
 
     private final String PRODUCTS_CART_XPATH = "//tr[@class='success']";
 
-    @FindBy(xpath = PRODUCTS_CART_XPATH)
-    private List<ExtendedWebElement> cartProducts;
+    @FindBy(xpath = "//h2[text()='Products'")
+    private ExtendedWebElement title;
 
     @FindBy(id = "totalp")
     private ExtendedWebElement totalPrice;
 
     @FindBy(xpath = "//button[text()='Place Order']")
-    private ExtendedWebElement placeOrderbutton;
+    private ExtendedWebElement placeOrderButton;
 
-    @FindBy(xpath = "//h2[text()='Products']/..//thead/tr/th")
-    private List<ExtendedWebElement> tableItems;
+    @FindBy(xpath = "//h2[text()='Products']/..//thead/tr/th[%s]")
+    private ExtendedWebElement tableTitle;
+
+    @FindBy(xpath = PRODUCTS_CART_XPATH)
+    private List<ExtendedWebElement> cartProducts;
 
     @FindBy(xpath = PRODUCTS_CART_XPATH + "[%s]//td/img")
-    private ExtendedWebElement productImg;
+    private ExtendedWebElement productImage;
 
     @FindBy(xpath = PRODUCTS_CART_XPATH + "[%s]//td[3]")
     private ExtendedWebElement productPrice;
@@ -34,66 +36,68 @@ public class CartPage extends MyAbstractPage {
     @FindBy(xpath = PRODUCTS_CART_XPATH + "[%s]//td[2]")
     private ExtendedWebElement productName;
 
-    @FindBy(xpath = "//a[text()='Delete']")
-    private List<ExtendedWebElement> deleteButtons;
-
-    @FindBy(xpath = "//div[@class='sweet-alert  showSweetAlert visible']")
-    private ConfirmOrderPopup confirmOrderPopup;
-
-    @FindBy(xpath = "//div[@class='modal fade show']//div[@class='modal-content']")
-    private PlaceOrderPopup placeOrderPopup;
+    @FindBy(xpath = PRODUCTS_CART_XPATH + "[%s]//a[text()='Delete']")
+    private ExtendedWebElement deleteButton;
 
     public CartPage(WebDriver driver) {
         super(driver);
+        setPageOpeningStrategy(PageOpeningStrategy.BY_ELEMENT);
+        setUiLoadedMarker(title);
+    }
+
+    public void waitUntilProductsLoaded() {
         waitUntil((e -> !cartProducts.isEmpty()), 5);
     }
 
-    public List<String> getTableItems() {
-        return tableItems
-                .stream()
-                .map(ExtendedWebElement::getText)
-                .collect(Collectors.toList());
+    public boolean isPicColumnPresent() {
+        return tableTitle.format(1).getText().equals("Pic");
+    }
+
+    public boolean isTitleColumnPresent() {
+        return tableTitle.format(2).getText().equals("Title");
+    }
+
+    public boolean isPriceColumnPresent() {
+        return tableTitle.format(3).getText().equals("Price");
+    }
+
+    public boolean isDeleteColumnPresent() {
+        return tableTitle.format(4).getText().equals("x");
     }
 
     public String getImageAttribute(int index) {
-        return productImg.format(index).getAttribute("src");
+        return productImage.format(index).getAttribute("src");
     }
 
-    public String getProductPrice(int index) {
-        waitUntil((e->productPrice.isElementPresent()), 5);
+    public String getProductPriceText(int index) {
+//        waitUntil((e->productPrice.isElementPresent()), 5);
         return productPrice.format(index).getText();
     }
 
-    public String getProductName(int index) {
+    public String getProductNameText(int index) {
         return productName.format(index).getText();
     }
 
     public boolean isDeleteButtonPresent(int index) {
-        return deleteButtons.get(index).isElementPresent();
+        return deleteButton.format(index).isElementPresent();
     }
 
     public int getProductsSize() {
         return cartProducts.size();
     }
 
-    public String getTotalPrice() {
+    public String getTotalPriceText() {
         return totalPrice.getText();
     }
 
     public PlaceOrderPopup clickPlaceOrderButton() {
-        placeOrderbutton.click();
-        waitUntil((e -> placeOrderPopup.isUIObjectPresent()), 5);
-        return placeOrderPopup;
+        placeOrderButton.click();
+        return new PlaceOrderPopup(driver);
     }
 
-    public ConfirmOrderPopup getConfirmOrderPopup() {
-        waitUntil((e -> confirmOrderPopup.isUIObjectPresent()), 5);
-        return confirmOrderPopup;
-    }
-
-    public void clickDeleteProduct(int index) {
+    public void clickDeleteButton(int index) {
         int expectedSize = getProductsSize() - 1;
-        deleteButtons.get(index).click();
+        deleteButton.format(index).click();
         waitUntil(e -> cartProducts.size() == expectedSize, 5);
     }
 }

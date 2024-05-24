@@ -1,14 +1,14 @@
 package web.components;
 
 import com.zebrunner.carina.webdriver.decorator.ExtendedWebElement;
-import com.zebrunner.carina.webdriver.gui.AbstractUIObject;
-import org.openqa.selenium.SearchContext;
+import com.zebrunner.carina.webdriver.decorator.PageOpeningStrategy;
+import com.zebrunner.carina.webdriver.gui.AbstractPage;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.FindBy;
 
-public class PlaceOrderPopup extends AbstractUIObject {
+public class PlaceOrderPopup extends AbstractPage {
 
-    @FindBy(xpath = ".//h5")
+    @FindBy(xpath = ".//h5[text()='Place order']")
     private ExtendedWebElement title;
 
     @FindBy(id = "totalm")
@@ -35,38 +35,60 @@ public class PlaceOrderPopup extends AbstractUIObject {
     @FindBy(xpath = ".//button[text()='Purchase']")
     private ExtendedWebElement purchaseButton;
 
-    @FindBy(xpath = ".//button[text()='Close']")
+    @FindBy(xpath = "//div[@class='modal fade show']//button[text()='Close']")
     private ExtendedWebElement closeButton;
 
-    public PlaceOrderPopup(WebDriver driver, SearchContext searchContext) {
-        super(driver, searchContext);
+    public PlaceOrderPopup(WebDriver driver) {
+        super(driver);
+        setPageOpeningStrategy(PageOpeningStrategy.BY_ELEMENT);
+        setUiLoadedMarker(title);
     }
 
-    public String getTitle() {
-        return title.getText();
+    public boolean isNameFieldPresent() {
+        return nameInput.isElementPresent();
     }
 
-    public String getName(){
+    public boolean isCountryFieldPresent() {
+        return countryInput.isElementPresent();
+    }
+
+    public boolean isCityFieldPresent() {
+        return cityInput.isElementPresent();
+    }
+
+    public boolean isCreditCardFieldPresent() {
+        return creditCardInput.isElementPresent();
+    }
+
+    public boolean isMonthFieldPresent() {
+        return monthInput.isElementPresent();
+    }
+
+    public boolean isYearFieldPresent() {
+        return yearInput.isElementPresent();
+    }
+
+    public String getNameText() {
         return nameInput.getText();
     }
 
-    public String getCountry(){
+    public String getCountryText() {
         return countryInput.getText();
     }
 
-    public String getCity(){
+    public String getCityText() {
         return cityInput.getText();
     }
 
-    public String getCreditCard(){
+    public String getCreditCardText() {
         return creditCardInput.getText();
     }
 
-    public String getMonth(){
+    public String getMonthText() {
         return monthInput.getText();
     }
 
-    public String getYear(){
+    public String getYearText() {
         return yearInput.getText();
     }
 
@@ -78,7 +100,7 @@ public class PlaceOrderPopup extends AbstractUIObject {
         return purchaseButton.isElementPresent();
     }
 
-    public String getTotalPrice() {
+    public String getTotalPriceText() {
         return totalPrice.getText().replace("Total: ", "");
     }
 
@@ -106,13 +128,18 @@ public class PlaceOrderPopup extends AbstractUIObject {
         yearInput.type(year);
     }
 
-    public void submitPlaceOrderForm(String name, String country, String city, String creditСard, String month, String year) {
+    public void clickPurchaseButton() {
+        purchaseButton.click();
+    }
+
+    public ConfirmOrderPopup submitPlaceOrderForm(String name, String country, String city, String creditСard, String month, String year) {
         typeName(name);
         typeCountry(country);
         typeCity(city);
         typeCreditСard(creditСard);
         typeMonth(month);
         typeYear(year);
-        purchaseButton.click();
+        clickPurchaseButton();
+        return new ConfirmOrderPopup(driver);
     }
 }

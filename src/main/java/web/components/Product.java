@@ -5,9 +5,7 @@ import com.zebrunner.carina.webdriver.gui.AbstractUIObject;
 import org.openqa.selenium.SearchContext;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.FindBy;
-import web.pages.ProductCardPage;
-
-import java.util.List;
+import web.pages.ProductDetailCardPage;
 
 public class Product extends AbstractUIObject {
 
@@ -24,16 +22,16 @@ public class Product extends AbstractUIObject {
     private ExtendedWebElement productText;
 
     @FindBy(xpath = ".//h4/a")
-    private ExtendedWebElement cardLinks;
+    private ExtendedWebElement cardLink;
 
-    @FindBy(xpath = "//a[text()='Add to cart']")
+    @FindBy(xpath = ".//a[text()='Add to cart']")
     private ExtendedWebElement addToCartButton;
 
     public Product(WebDriver driver, SearchContext searchContext) {
         super(driver, searchContext);
     }
 
-    public String getName() {
+    public String getNameText() {
         return productName.getText();
     }
 
@@ -45,15 +43,14 @@ public class Product extends AbstractUIObject {
         return productImage.getAttribute("src");
     }
 
-    public String getPrice() {
+    public String getPriceText() {
         return productPrice
                 .getText()
                 .replace("$", "");
     }
 
-    public ProductCardPage clickCard() {
-        cardLinks.click();
-        waitUntil(e -> addToCartButton.isElementPresent(), 5);
-        return new ProductCardPage(driver);
+    public ProductDetailCardPage clickCard() {
+        cardLink.click();
+        return new ProductDetailCardPage(driver);
     }
 }

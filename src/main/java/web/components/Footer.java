@@ -6,7 +6,7 @@ import org.openqa.selenium.SearchContext;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.FindBy;
 
-public class FooterComponent extends AbstractUIObject {
+public class Footer extends AbstractUIObject {
 
     @FindBy(xpath = "//h4[./*[text()='About Us']]")
     private ExtendedWebElement aboutUsTitle;
@@ -27,13 +27,13 @@ public class FooterComponent extends AbstractUIObject {
     private ExtendedWebElement email;
 
     @FindBy(xpath = "//h4/img/..")
-    private ExtendedWebElement footerTextWithLogo;
+    private ExtendedWebElement footerSectionWithLogo;
 
-    public FooterComponent(WebDriver driver, SearchContext searchContext) {
+    public Footer(WebDriver driver, SearchContext searchContext) {
         super(driver, searchContext);
     }
 
-    public FooterComponent(WebDriver driver) {
+    public Footer(WebDriver driver) {
         super(driver);
     }
 
@@ -65,15 +65,15 @@ public class FooterComponent extends AbstractUIObject {
         return address.getText();
     }
 
-    public String getPhoneNumber() {
+    public String getPhoneNumberText() {
         return phoneNumber.getText();
     }
 
-    public String getEmail() {
+    public String getEmailText() {
         return email.getText();
     }
 
-    public String getFooterTextWithLogo() {
-        return footerTextWithLogo.getText();
+    public String getFooterSectionWithLogoText() {
+        return footerSectionWithLogo.getText();
     }
 }
