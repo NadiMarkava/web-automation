@@ -21,9 +21,6 @@ public class Product extends AbstractUIObject {
     @FindBy(id = "article")
     private ExtendedWebElement productText;
 
-    @FindBy(xpath = ".//h4/a")
-    private ExtendedWebElement cardLink;
-
     @FindBy(xpath = ".//a[text()='Add to cart']")
     private ExtendedWebElement addToCartButton;
 
@@ -49,8 +46,8 @@ public class Product extends AbstractUIObject {
                 .replace("$", "");
     }
 
-    public ProductDetailCardPage clickCard() {
-        cardLink.click();
+    public ProductDetailCardPage clickProductTitle() {
+        productName.click();
         return new ProductDetailCardPage(driver);
     }
 }

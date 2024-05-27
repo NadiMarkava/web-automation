@@ -6,7 +6,7 @@ import org.openqa.selenium.support.FindBy;
 import web.components.Footer;
 import web.components.NavBar;
 
-public class MyAbstractPage extends AbstractPage {
+public class DemoBlazeAbstractPage extends AbstractPage {
 
     @FindBy(id = "footc")
     private Footer footer;
@@ -14,7 +14,7 @@ public class MyAbstractPage extends AbstractPage {
     @FindBy(id = "navbarExample")
     private NavBar navMenu;
 
-    public MyAbstractPage(WebDriver driver) {
+    public DemoBlazeAbstractPage(WebDriver driver) {
         super(driver);
     }
 

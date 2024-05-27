@@ -6,10 +6,11 @@ import com.zebrunner.carina.webdriver.decorator.PageOpeningStrategy;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.FindBy;
 import web.components.Product;
+import web.enums.Category;
 
 import java.util.List;
 
-public class HomePage extends MyAbstractPage {
+public class HomePage extends DemoBlazeAbstractPage {
 
     @FindBy(xpath = "div[class='carousel-inner']")
     private ExtendedWebElement carousel;
@@ -35,7 +36,7 @@ public class HomePage extends MyAbstractPage {
         waitUntil((e -> !products.isEmpty()), 5);
     }
 
-    public void clickCategory(String categoryName) {
-        categoryLink.format(categoryName).click();
+    public void clickCategory(Category categoryName) {
+        categoryLink.format(categoryName.getName()).click();
     }
 }

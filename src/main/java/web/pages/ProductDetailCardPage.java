@@ -6,7 +6,7 @@ import org.openqa.selenium.Alert;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.FindBy;
 
-public class ProductDetailCardPage extends MyAbstractPage {
+public class ProductDetailCardPage extends DemoBlazeAbstractPage {
 
     @FindBy(xpath = "//div[@class='product-image']//img")
     private ExtendedWebElement productImage;

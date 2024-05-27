@@ -8,7 +8,7 @@ import web.components.PlaceOrderPopup;
 
 import java.util.List;
 
-public class CartPage extends MyAbstractPage {
+public class CartPage extends DemoBlazeAbstractPage {
 
     private final String PRODUCTS_CART_XPATH = "//tr[@class='success']";
 
@@ -21,8 +21,17 @@ public class CartPage extends MyAbstractPage {
     @FindBy(xpath = "//button[text()='Place Order']")
     private ExtendedWebElement placeOrderButton;
 
-    @FindBy(xpath = "//h2[text()='Products']/..//thead/tr/th[%s]")
-    private ExtendedWebElement tableTitle;
+    @FindBy(xpath = "//thead/tr/th[text()='Title']")
+    private ExtendedWebElement titleColumn;
+
+    @FindBy(xpath = "//thead/tr/th[text()='Pic']")
+    private ExtendedWebElement picColumn;
+
+    @FindBy(xpath = "//thead/tr/th[text()='Price']")
+    private ExtendedWebElement priceColumn;
+
+    @FindBy(xpath = "//thead/tr/th[text()='x']")
+    private ExtendedWebElement deleteColumn;
 
     @FindBy(xpath = PRODUCTS_CART_XPATH)
     private List<ExtendedWebElement> cartProducts;
@@ -50,19 +59,19 @@ public class CartPage extends MyAbstractPage {
     }
 
     public boolean isPicColumnPresent() {
-        return tableTitle.format(1).getText().equals("Pic");
+        return picColumn.isElementPresent();
     }
 
     public boolean isTitleColumnPresent() {
-        return tableTitle.format(2).getText().equals("Title");
+        return titleColumn.isElementPresent();
     }
 
     public boolean isPriceColumnPresent() {
-        return tableTitle.format(3).getText().equals("Price");
+        return priceColumn.isElementPresent();
     }
 
     public boolean isDeleteColumnPresent() {
-        return tableTitle.format(4).getText().equals("x");
+        return deleteColumn.isElementPresent();
     }
 
     public String getImageAttribute(int index) {
@@ -70,7 +79,6 @@ public class CartPage extends MyAbstractPage {
     }
 
     public String getProductPriceText(int index) {
-//        waitUntil((e->productPrice.isElementPresent()), 5);
         return productPrice.format(index).getText();
     }
 
@@ -96,8 +104,6 @@ public class CartPage extends MyAbstractPage {
     }
 
     public void clickDeleteButton(int index) {
-        int expectedSize = getProductsSize() - 1;
         deleteButton.format(index).click();
-        waitUntil(e -> cartProducts.size() == expectedSize, 5);
     }
 }

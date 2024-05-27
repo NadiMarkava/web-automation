@@ -48,7 +48,7 @@ public class WebTest extends BaseDemoBlazeTest {
         String name = product.getNameText();
         String price = product.getPriceText();
         String text = product.getCardText();
-        ProductDetailCardPage productCardPage = product.clickCard();
+        ProductDetailCardPage productCardPage = product.clickProductTitle();
         assertEquals(productCardPage.getNameText(), name, "Names are not equal");
         assertEquals(productCardPage.getProductPriceText(), price, "Prices are not equal");
         assertEquals(productCardPage.getImageAttribute(), image, "Image's attributes are not equal");
@@ -61,13 +61,13 @@ public class WebTest extends BaseDemoBlazeTest {
         homePage.open();
         homePage.waitUntilProductsLoaded();
         List<String> allProducts = homePage.getProducts().stream().map(p -> p.getNameText()).collect(Collectors.toList());
-        homePage.clickCategory(PHONES.getName());
+        homePage.clickCategory(PHONES);
         List<String> phoneProducts = homePage.getProducts().stream().map(p -> p.getNameText()).collect(Collectors.toList());
         assertNotEquals(phoneProducts, allProducts, "Products are the same!");
-        homePage.clickCategory(LAPTOPS.getName());
+        homePage.clickCategory(LAPTOPS);
         List<String> laptopProducts = homePage.getProducts().stream().map(p -> p.getNameText()).collect(Collectors.toList());
         assertNotEquals(laptopProducts, phoneProducts, "Products are the same!");
-        homePage.clickCategory(MONITORS.getName());
+        homePage.clickCategory(MONITORS);
         List<String> monitorProducts = homePage.getProducts().stream().map(p -> p.getNameText()).collect(Collectors.toList());
         assertNotEquals(monitorProducts, laptopProducts, "Products are the same!");
     }
@@ -83,7 +83,7 @@ public class WebTest extends BaseDemoBlazeTest {
         String image = product.getImageAttribute();
         String name = product.getNameText();
         String price = product.getPriceText();
-        ProductDetailCardPage productCardPage = product.clickCard();
+        ProductDetailCardPage productCardPage = product.clickProductTitle();
         productCardPage.clickAddToCartButton();
         homePage.getNavBar().clickNavBarMenuOption(CART);
         CartPage cartPage = new CartPage(getDriver());
@@ -140,7 +140,7 @@ public class WebTest extends BaseDemoBlazeTest {
     }
 
     @Test()
-    public void purchaseCompleteTest() {
+    public void verifyConfirmOrderTest() {
         String name = "Test";
         String creditCard = "Test";
         HomePage homePage = new HomePage(getDriver());
@@ -165,12 +165,12 @@ public class WebTest extends BaseDemoBlazeTest {
         assertEquals(amount, price + " USD", "Prices are not equal");
         assertEquals(cardName, name, "Names are not equal");
         assertEquals(cardNumber, creditCard, "Credit cards are not equal");
-        assertEquals(date.matches("[0-9]{1,2}\\/[0-9]{1,2}\\/[0-9]{4}"), "Date does not match");
+        assertTrue(date.matches("[0-9]{1,2}\\/[0-9]{1,2}\\/[0-9]{4}"), "Date does not match");
         assertTrue(confirmOrderPopup.isOkButtonPresent(), "Success icon is not present");
     }
 
     @Test()
-    public void placeOrderFormTest() {
+    public void verifyPlaceOrderFormTest() {
         HomePage homePage = new HomePage(getDriver());
         homePage.open();
         homePage.getNavBar().clickNavBarMenuOption(CART);
@@ -207,10 +207,9 @@ public class WebTest extends BaseDemoBlazeTest {
     }
 
     public void selectRandomProduct(List<Product> productList) {
-        HomePage homePage = new HomePage(getDriver());
         int randomProductIndex = new Random().nextInt(productList.size());
         Product product = productList.get(randomProductIndex);
-        ProductDetailCardPage productCardPage = product.clickCard();
+        ProductDetailCardPage productCardPage = product.clickProductTitle();
         productCardPage.clickAddToCartButton();
     }
 }

@@ -9,7 +9,7 @@ import org.openqa.selenium.support.FindBy;
 public class ConfirmOrderPopup extends AbstractPage {
 
     @FindBy(css = "div[class='sa-icon sa-success animate']")
-    private ExtendedWebElement icon;
+    private ExtendedWebElement greenCheckmarkIcon;
 
     @FindBy(xpath = "//h2[text()='Thank you for your purchase!']")
     private ExtendedWebElement title;
@@ -31,7 +31,7 @@ public class ConfirmOrderPopup extends AbstractPage {
     }
 
     public boolean isSuccessIconPresent() {
-        return icon.getElement().getCssValue("display").equalsIgnoreCase("block");
+        return greenCheckmarkIcon.isElementPresent();
     }
 
     public boolean isOkButtonPresent() {
