@@ -7,6 +7,8 @@ public enum NavBarMenuOption {
     ABOUT_US("About us"),
     CART("Cart"),
     LOG_IN("Log in"),
+    LOG_OUT("Log out"),
+    WELCOME("Welcome test"),
     SIGN_UP("Sign up");
 
     private final String name;

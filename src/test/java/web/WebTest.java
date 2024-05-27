@@ -1,26 +1,44 @@
 package web;
 
 import org.apache.commons.lang3.StringUtils;
+import org.openqa.selenium.Alert;
 import org.testng.annotations.Test;
-import web.components.ConfirmOrderPopup;
-import web.components.Footer;
-import web.components.PlaceOrderPopup;
-import web.components.Product;
+import web.components.*;
 import web.pages.CartPage;
 import web.pages.HomePage;
 import web.pages.ProductDetailCardPage;
 
-import java.util.List;
-import java.util.Random;
+import java.util.*;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import static org.testng.Assert.*;
 import static web.enums.Category.*;
-import static web.enums.NavBarMenuOption.CART;
-import static web.enums.NavBarMenuOption.HOME;
+import static web.enums.NavBarMenuOption.*;
 
 
 public class WebTest extends BaseDemoBlazeTest {
+
+    @Test()
+    public void verifyCarouselTest() {
+        HomePage homePage = new HomePage(getDriver());
+        homePage.open();
+        List<String> sliders = Arrays.asList("First", "Second", "Third");
+        homePage.clickCarouselBack();
+        String carouselPreviousImageAttribute = homePage.getCarouselImageAttribute();
+        for (int i = 0; i < homePage.getCarouselSize(); i++) {
+            homePage.clickCarouselNext();
+            assertTrue(homePage.isCarouselImagePresent(), "Image is not present");
+            assertEquals(homePage.getCarouselAttribute(), sliders.get(i) + " slide", "Number of slider is not equal");
+            assertNotEquals(carouselPreviousImageAttribute, homePage.getCarouselImageAttribute(), "Images are equal");
+            carouselPreviousImageAttribute = homePage.getCarouselImageAttribute();
+        }
+        homePage.clickCarouselNext();
+        for (int i = homePage.getCarouselSize() - 1; i > 0; i--) {
+            homePage.clickCarouselBack();
+            assertEquals(homePage.getCarouselAttribute(), sliders.get(i) + " slide", "Number of slider is not equal");
+        }
+    }
 
     @Test()
     public void verifyProductDataTest() {
@@ -204,6 +222,108 @@ public class WebTest extends BaseDemoBlazeTest {
         assertEquals(footerComponent.getPhoneNumberText(), "Phone: +440 123456", "Phones are not equal");
         assertEquals(footerComponent.getEmailText(), "Email: demo@blazemeter.com", "Emails are not equal");
         assertEquals(footerComponent.getFooterSectionWithLogoText(), "PRODUCT STORE", "Texts are not equal");
+    }
+
+    @Test()
+    public void verifySignUpTest() {
+        String randomText = UUID.randomUUID()
+                .toString()
+                .substring(0, 5);
+        HomePage homePage = new HomePage(getDriver());
+        homePage.open();
+        homePage.getNavBar().clickNavBarMenuOption(SIGN_UP);
+        SignUp signUp = new SignUp(getDriver());
+        assertTrue(signUp.isUserNameFieldPresent(), "User name is not present");
+        assertTrue(signUp.isPasswordPresent(), "Password is not present");
+        signUp.signUp(randomText, randomText);
+        Alert alert = getDriver().switchTo().alert();
+        assertEquals(alert.getText(), "Sign up successful.", "Texts are not equal");
+        alert.accept();
+        assertFalse(homePage.isModalPresent(), "Modal is present");
+        homePage.getNavBar().clickNavBarMenuOption(SIGN_UP);
+        signUp.clickSignUpButton();
+        assertEquals(alert.getText(), "This user already exist.", "Texts are not equal");
+        alert.accept();
+        assertTrue(homePage.isModalPresent(), "Modal is present");
+    }
+
+    @Test()
+    public void verifyLogInTest() {
+        String userName = "test";
+        String password = "test";
+        HomePage homePage = new HomePage(getDriver());
+        homePage.open();
+        homePage.getNavBar().clickNavBarMenuOption(LOG_IN);
+        LogIn logIn = new LogIn(getDriver());
+        assertTrue(logIn.isUserNameFieldPresent(), "User name is not present");
+        assertTrue(logIn.isPasswordPresent(), "Password is not present");
+        logIn.logIn(userName, password);
+        assertFalse(homePage.getNavBar().isNavItemPresent(LOG_IN), "Log in is present");
+        assertFalse(homePage.getNavBar().isNavItemPresent(SIGN_UP), "Sign up is present");
+        assertTrue(homePage.getNavBar().isNavItemPresent(WELCOME), "Welcome is not present");
+        assertTrue(homePage.getNavBar().isNavItemPresent(LOG_OUT), "Log out is not present");
+        homePage.waitUntilProductsLoaded();
+    }
+
+    @Test()
+    public void verifyLogInWithErrorTest() {
+        HomePage homePage = new HomePage(getDriver());
+        homePage.open();
+        homePage.getNavBar().clickNavBarMenuOption(LOG_IN);
+        LogIn logIn = new LogIn(getDriver());
+        logIn.logIn("teeest", "test");
+        Alert alert = getDriver().switchTo().alert();
+        assertEquals(alert.getText(), "User does not exist.", "Texts are not equal");
+        alert.accept();
+        logIn.logIn("test", "11111");
+        assertEquals(alert.getText(), "Wrong password.", "Texts are not equal");
+        alert.accept();
+        logIn.logIn("", "");
+        assertEquals(alert.getText(), "Please fill out Username and Password.", "Texts are not equal");
+    }
+
+    @Test()
+    public void verifyCartAfterLogOutTest() {
+        String userName = "test";
+        String password = "test";
+        HomePage homePage = new HomePage(getDriver());
+        homePage.open();
+        homePage.getNavBar().clickNavBarMenuOption(LOG_IN);
+        LogIn logIn = new LogIn(getDriver());
+        logIn.logIn(userName, password);
+        homePage.waitUntilProductsLoaded();
+        List<Product> productList = homePage.getProducts();
+        selectRandomProduct(productList);
+        homePage.getNavBar().clickNavBarMenuOption(CART);
+        CartPage cartPage = new CartPage(getDriver());
+        cartPage.waitUntilProductsLoaded();
+        assertEquals(cartPage.getProductsSize(), 1, "Sizes are not equal");
+        String name = cartPage.getProductNameText(1);
+        String price = cartPage.getProductPriceText(1);
+        homePage.getNavBar().clickNavBarMenuOption(LOG_OUT);
+        homePage.getNavBar().clickNavBarMenuOption(LOG_IN);
+        logIn.logIn(userName, password);
+        homePage.getNavBar().clickNavBarMenuOption(CART);
+        cartPage.waitUntilProductsLoaded();
+        assertEquals(cartPage.getProductsSize(), 1, "Sizes are not equal");
+        assertEquals(cartPage.getProductNameText(1), name, "Names are not equal");
+        assertEquals(cartPage.getProductPriceText(1), price, "Prices are not equal");
+        cartPage.clickDeleteButton(1);
+        assertEquals(cartPage.getProductsSize(), 0, "Sizes are not equal");
+    }
+
+    @Test()
+    public void verifyContactTest() {
+        HomePage homePage = new HomePage(getDriver());
+        homePage.open();
+        homePage.getNavBar().clickNavBarMenuOption(CONTACT);
+        Contact contact = new Contact(getDriver());
+        assertTrue(homePage.isModalPresent(), "Modal is present");
+        assertTrue(contact.isEmailFieldPresent(), "Email is not present");
+        assertTrue(contact.isNameFieldPresent(), "Name is not present");
+        assertTrue(contact.isMessageFieldPresent(), "Message is not present");
+        contact.sendMessage("Test", "Test", "Test");
+        assertFalse(homePage.isModalPresent(), "Modal is present");
     }
 
     public void selectRandomProduct(List<Product> productList) {

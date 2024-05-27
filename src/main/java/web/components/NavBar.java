@@ -19,4 +19,8 @@ public class NavBar extends AbstractUIObject {
     public void clickNavBarMenuOption(NavBarMenuOption menuOption) {
         navMenuItem.format(menuOption.getName()).click();
     }
+
+    public boolean isNavItemPresent(NavBarMenuOption menuOption) {
+        return navMenuItem.format(menuOption.getName()).isElementPresent();
+    }
 }

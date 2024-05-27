@@ -68,30 +68,6 @@ public class PlaceOrderPopup extends AbstractPage {
         return yearInput.isElementPresent();
     }
 
-    public String getNameText() {
-        return nameInput.getText();
-    }
-
-    public String getCountryText() {
-        return countryInput.getText();
-    }
-
-    public String getCityText() {
-        return cityInput.getText();
-    }
-
-    public String getCreditCardText() {
-        return creditCardInput.getText();
-    }
-
-    public String getMonthText() {
-        return monthInput.getText();
-    }
-
-    public String getYearText() {
-        return yearInput.getText();
-    }
-
     public boolean isCloseButtonPresent(){
         return closeButton.isElementPresent();
     }
