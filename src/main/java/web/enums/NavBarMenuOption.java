@@ -1,6 +1,6 @@
 package web.enums;
 
-public enum Navbar {
+public enum NavBarMenuOption {
 
     HOME("Home "),
     CONTACT("Contact"),
@@ -11,7 +11,7 @@ public enum Navbar {
 
     private final String name;
 
-    private Navbar(String name) {
+    NavBarMenuOption(String name) {
         this.name = name;
     }
 

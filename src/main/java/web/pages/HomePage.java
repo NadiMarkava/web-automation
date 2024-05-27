@@ -1,49 +1,42 @@
 package web.pages;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.openqa.selenium.By;
+import com.zebrunner.carina.utils.R;
+import com.zebrunner.carina.webdriver.decorator.ExtendedWebElement;
+import com.zebrunner.carina.webdriver.decorator.PageOpeningStrategy;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.support.FindBy;
 import web.components.Product;
+import web.enums.Category;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
-import static web.pages.ProductCardPage.addToCartButton;
+public class HomePage extends DemoBlazeAbstractPage {
 
-public class HomePage extends BasePage {
+    @FindBy(xpath = "div[class='carousel-inner']")
+    private ExtendedWebElement carousel;
 
-    public static final Logger LOGGER = LogManager.getLogger(HomePage.class.getName());
-    protected static String PRODUCTS_XPATH = "//div[@class='card h-100']";
+    @FindBy(xpath = "//div[@class='card h-100']")
+    private List<Product> products;
+
+    @FindBy(xpath = "//a[text()='CATEGORIES']/../a[text()='%s']")
+    private ExtendedWebElement categoryLink;
 
     public HomePage(WebDriver driver) {
         super(driver);
-        driver.get("https://demoblaze.com/");
-        waitForElementsListNotEmpty(driver, PRODUCTS_XPATH, 5);
+        setPageAbsoluteURL(R.CONFIG.get("url"));
+        setPageOpeningStrategy(PageOpeningStrategy.BY_ELEMENT);
+        setUiLoadedMarker(carousel);
     }
 
     public List<Product> getProducts() {
-        List<Product> products = driver.findElements(By.xpath(PRODUCTS_XPATH))
-                .stream()
-                .map(e -> new Product(e))
-                .collect(Collectors.toList());
         return products;
     }
 
-    public List<String> getNavItems() {
-        return driver.findElements(By.xpath("//li[contains(@class, 'nav-item')]/a[not(contains(@style,'display:none'))]"))
-                .stream()
-                .map(e -> e.getText())
-                .collect(Collectors.toList());
+    public void waitUntilProductsLoaded() {
+        waitUntil((e -> !products.isEmpty()), 5);
     }
 
-    public void selectCategory(String categoryName) {
-        driver.findElement(By.xpath(String.format("//a[text()='CATEGORIES']/../a[text()='%s']", categoryName))).click();
-    }
-
-    public ProductCardPage clickCard(int cardNumber) {
-        driver.findElements(By.xpath(".//h4/a")).get(cardNumber).click();
-        waitForElementIsPresent(driver, addToCartButton, 5);
-        return new ProductCardPage(driver);
+    public void clickCategory(Category categoryName) {
+        categoryLink.format(categoryName.getName()).click();
     }
 }

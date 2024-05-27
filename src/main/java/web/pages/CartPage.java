@@ -1,77 +1,109 @@
 package web.pages;
 
-import org.openqa.selenium.By;
+import com.zebrunner.carina.webdriver.decorator.ExtendedWebElement;
+import com.zebrunner.carina.webdriver.decorator.PageOpeningStrategy;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.WebDriverWait;
-import web.components.ConfirmOrderPopup;
+import org.openqa.selenium.support.FindBy;
 import web.components.PlaceOrderPopup;
-import web.components.Product;
 
-import java.time.Duration;
 import java.util.List;
-import java.util.stream.Collectors;
 
-public class CartPage extends BasePage {
+public class CartPage extends DemoBlazeAbstractPage {
 
-    protected static String PRODUCTS_CART_XPATH = "//tr[@class='success']";
-    private By totalPrice = By.id("totalp");
-    private By button = By.xpath("//button[text()='Place Order']");
+    private final String PRODUCTS_CART_XPATH = "//tr[@class='success']";
+
+    @FindBy(xpath = "//h2[text()='Products'")
+    private ExtendedWebElement title;
+
+    @FindBy(id = "totalp")
+    private ExtendedWebElement totalPrice;
+
+    @FindBy(xpath = "//button[text()='Place Order']")
+    private ExtendedWebElement placeOrderButton;
+
+    @FindBy(xpath = "//thead/tr/th[text()='Title']")
+    private ExtendedWebElement titleColumn;
+
+    @FindBy(xpath = "//thead/tr/th[text()='Pic']")
+    private ExtendedWebElement picColumn;
+
+    @FindBy(xpath = "//thead/tr/th[text()='Price']")
+    private ExtendedWebElement priceColumn;
+
+    @FindBy(xpath = "//thead/tr/th[text()='x']")
+    private ExtendedWebElement deleteColumn;
+
+    @FindBy(xpath = PRODUCTS_CART_XPATH)
+    private List<ExtendedWebElement> cartProducts;
+
+    @FindBy(xpath = PRODUCTS_CART_XPATH + "[%s]//td/img")
+    private ExtendedWebElement productImage;
+
+    @FindBy(xpath = PRODUCTS_CART_XPATH + "[%s]//td[3]")
+    private ExtendedWebElement productPrice;
+
+    @FindBy(xpath = PRODUCTS_CART_XPATH + "[%s]//td[2]")
+    private ExtendedWebElement productName;
+
+    @FindBy(xpath = PRODUCTS_CART_XPATH + "[%s]//a[text()='Delete']")
+    private ExtendedWebElement deleteButton;
 
     public CartPage(WebDriver driver) {
         super(driver);
+        setPageOpeningStrategy(PageOpeningStrategy.BY_ELEMENT);
+        setUiLoadedMarker(title);
     }
 
-    public List<String> getTableItems() {
-        return driver.findElements(By.xpath("//h2[text()='Products']/..//thead/tr/th"))
-                .stream()
-                .map(WebElement::getText)
-                .collect(Collectors.toList());
+    public void waitUntilProductsLoaded() {
+        waitUntil((e -> !cartProducts.isEmpty()), 5);
     }
 
-    public List<String> getImageAttribute() {
-        return driver.findElements(By.xpath(PRODUCTS_CART_XPATH + "//td/img"))
-                .stream()
-                .map(e -> e.getAttribute("src"))
-                .collect(Collectors.toList());
+    public boolean isPicColumnPresent() {
+        return picColumn.isElementPresent();
     }
 
-    public List<String> getTableValues(int index) {
-        return driver.findElements(By.xpath(String.format(PRODUCTS_CART_XPATH + "[%s]//td", index)))
-                .stream()
-                .map(WebElement::getText)
-                .collect(Collectors.toList());
+    public boolean isTitleColumnPresent() {
+        return titleColumn.isElementPresent();
     }
 
-    public List<String> getProductsValue(int index) {
-        return driver.findElements(By.xpath(String.format(PRODUCTS_CART_XPATH + "//td[%s]", index)))
-                .stream()
-                .map(WebElement::getText)
-                .collect(Collectors.toList());
+    public boolean isPriceColumnPresent() {
+        return priceColumn.isElementPresent();
+    }
+
+    public boolean isDeleteColumnPresent() {
+        return deleteColumn.isElementPresent();
+    }
+
+    public String getImageAttribute(int index) {
+        return productImage.format(index).getAttribute("src");
+    }
+
+    public String getProductPriceText(int index) {
+        return productPrice.format(index).getText();
+    }
+
+    public String getProductNameText(int index) {
+        return productName.format(index).getText();
+    }
+
+    public boolean isDeleteButtonPresent(int index) {
+        return deleteButton.format(index).isElementPresent();
     }
 
     public int getProductsSize() {
-        return driver.findElements(By.xpath(PRODUCTS_CART_XPATH)).size();
+        return cartProducts.size();
     }
 
-    public String getTotalPrice() {
-        return driver.findElement(totalPrice).getText();
+    public String getTotalPriceText() {
+        return totalPrice.getText();
     }
 
     public PlaceOrderPopup clickPlaceOrderButton() {
-        driver.findElement(button).click();
-        waitForElementIsPresent(driver, MODAL_XPATH, 5);
-        return new PlaceOrderPopup(driver.findElement(By.xpath(MODAL_XPATH)));
+        placeOrderButton.click();
+        return new PlaceOrderPopup(driver);
     }
 
-    public ConfirmOrderPopup getConfirmOrderPopup() {
-        waitForElementIsPresent(driver, "//div[@class='sweet-alert  showSweetAlert visible']", 5);
-        return new ConfirmOrderPopup(driver.findElement(By.cssSelector("div[class='sweet-alert  showSweetAlert visible']")));
-    }
-
-    public void clickDeleteProduct(int index) {
-        int expectedSize = getProductsSize()-1;
-        driver.findElements(By.xpath("//a[text()='Delete']")).get(index).click();
-        waitForElementListSizeChanged(driver, PRODUCTS_CART_XPATH, expectedSize, 5);
+    public void clickDeleteButton(int index) {
+        deleteButton.format(index).click();
     }
 }
