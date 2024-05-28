@@ -1,4 +1,4 @@
-package web.components;
+package web.pages;
 
 import com.zebrunner.carina.webdriver.decorator.ExtendedWebElement;
 import com.zebrunner.carina.webdriver.decorator.PageOpeningStrategy;
@@ -6,7 +6,7 @@ import com.zebrunner.carina.webdriver.gui.AbstractPage;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.FindBy;
 
-public class LogIn extends AbstractPage {
+public class LoginPage extends AbstractPage {
 
     @FindBy(xpath = "//h2[text()='Log in']")
     private ExtendedWebElement title;
@@ -23,7 +23,7 @@ public class LogIn extends AbstractPage {
     @FindBy(xpath = "//button[text()='Log in']")
     private ExtendedWebElement logInButton;
 
-    public LogIn(WebDriver driver) {
+    public LoginPage(WebDriver driver) {
         super(driver);
         setPageOpeningStrategy(PageOpeningStrategy.BY_ELEMENT);
         setUiLoadedMarker(title);

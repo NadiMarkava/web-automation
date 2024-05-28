@@ -1,4 +1,4 @@
-package web.components;
+package web.pages;
 
 import com.zebrunner.carina.webdriver.decorator.ExtendedWebElement;
 import com.zebrunner.carina.webdriver.decorator.PageOpeningStrategy;
@@ -6,7 +6,7 @@ import com.zebrunner.carina.webdriver.gui.AbstractPage;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.FindBy;
 
-public class ConfirmOrderPopup extends AbstractPage {
+public class ConfirmOrderPage extends AbstractPage {
 
     @FindBy(css = "div[class='sa-icon sa-success animate']")
     private ExtendedWebElement greenCheckmarkIcon;
@@ -20,7 +20,7 @@ public class ConfirmOrderPopup extends AbstractPage {
     @FindBy(xpath = "//button[text()='OK']")
     private ExtendedWebElement okButton;
 
-    public ConfirmOrderPopup(WebDriver driver) {
+    public ConfirmOrderPage(WebDriver driver) {
         super(driver);
         setPageOpeningStrategy(PageOpeningStrategy.BY_ELEMENT);
         setUiLoadedMarker(title);

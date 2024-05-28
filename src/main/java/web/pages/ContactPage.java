@@ -1,4 +1,4 @@
-package web.components;
+package web.pages;
 
 import com.zebrunner.carina.webdriver.decorator.ExtendedWebElement;
 import com.zebrunner.carina.webdriver.decorator.PageOpeningStrategy;
@@ -6,15 +6,15 @@ import com.zebrunner.carina.webdriver.gui.AbstractPage;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.FindBy;
 
-public class Contact extends AbstractPage {
+public class ContactPage extends AbstractPage {
 
     @FindBy(xpath = "//h2[text()='New message']")
     private ExtendedWebElement title;
 
-    @FindBy(xpath = "//label[text()='Contact Email:']//../input")
+    @FindBy(xpath = "//label[text()='ContactPage Email:']//../input")
     private ExtendedWebElement emailInput;
 
-    @FindBy(xpath = "//label[text()='Contact Name:']//../input")
+    @FindBy(xpath = "//label[text()='ContactPage Name:']//../input")
     private ExtendedWebElement nameInput;
 
     @FindBy(xpath = "//label[text()='Message:']//../textarea")
@@ -26,7 +26,7 @@ public class Contact extends AbstractPage {
     @FindBy(xpath = "//button[text()='Send message']")
     private ExtendedWebElement sendMessageButton;
 
-    public Contact(WebDriver driver) {
+    public ContactPage(WebDriver driver) {
         super(driver);
         setPageOpeningStrategy(PageOpeningStrategy.BY_ELEMENT);
         setUiLoadedMarker(title);

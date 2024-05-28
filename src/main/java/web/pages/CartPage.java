@@ -4,7 +4,6 @@ import com.zebrunner.carina.webdriver.decorator.ExtendedWebElement;
 import com.zebrunner.carina.webdriver.decorator.PageOpeningStrategy;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.FindBy;
-import web.components.PlaceOrderPopup;
 
 import java.util.List;
 
@@ -98,9 +97,9 @@ public class CartPage extends DemoBlazeAbstractPage {
         return totalPrice.getText();
     }
 
-    public PlaceOrderPopup clickPlaceOrderButton() {
+    public PlaceOrderPage clickPlaceOrderButton() {
         placeOrderButton.click();
-        return new PlaceOrderPopup(driver);
+        return new PlaceOrderPage(driver);
     }
 
     public void clickDeleteButton(int index) {

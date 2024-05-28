@@ -8,7 +8,17 @@
 
     <test name="WTesting Page">
         <classes>
-            <class name="web.WebTest">
+            <class name="web.OrderFormTest">
+            </class>
+            <class name="web.AuthenticationTest">
+            </class>
+            <class name="web.CartTest">
+            </class>
+            <class name="web.HomeTest">
+            </class>
+            <class name="web.ProductsTest">
+            </class>
+            <class name="web.OrderFormTest">
             </class>
         </classes>
     </test>
