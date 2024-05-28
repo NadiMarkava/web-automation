@@ -15,7 +15,7 @@ import static web.utils.ScreenshotUtil.takeScreenshot;
 @Listeners(BaseDemoBlazeTest.class)
 public class BaseDemoBlazeTest implements IAbstractTest, ITestListener {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+    protected static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     @Override
     public void onTestFailure(ITestResult result) {

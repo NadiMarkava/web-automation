@@ -1,4 +1,4 @@
-package web.components;
+package web.pages;
 
 import com.zebrunner.carina.webdriver.decorator.ExtendedWebElement;
 import com.zebrunner.carina.webdriver.decorator.PageOpeningStrategy;
@@ -6,7 +6,7 @@ import com.zebrunner.carina.webdriver.gui.AbstractPage;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.FindBy;
 
-public class PlaceOrderPopup extends AbstractPage {
+public class PlaceOrderPage extends AbstractPage {
 
     @FindBy(xpath = ".//h5[text()='Place order']")
     private ExtendedWebElement title;
@@ -38,7 +38,7 @@ public class PlaceOrderPopup extends AbstractPage {
     @FindBy(xpath = "//div[@class='modal fade show']//button[text()='Close']")
     private ExtendedWebElement closeButton;
 
-    public PlaceOrderPopup(WebDriver driver) {
+    public PlaceOrderPage(WebDriver driver) {
         super(driver);
         setPageOpeningStrategy(PageOpeningStrategy.BY_ELEMENT);
         setUiLoadedMarker(title);
@@ -66,30 +66,6 @@ public class PlaceOrderPopup extends AbstractPage {
 
     public boolean isYearFieldPresent() {
         return yearInput.isElementPresent();
-    }
-
-    public String getNameText() {
-        return nameInput.getText();
-    }
-
-    public String getCountryText() {
-        return countryInput.getText();
-    }
-
-    public String getCityText() {
-        return cityInput.getText();
-    }
-
-    public String getCreditCardText() {
-        return creditCardInput.getText();
-    }
-
-    public String getMonthText() {
-        return monthInput.getText();
-    }
-
-    public String getYearText() {
-        return yearInput.getText();
     }
 
     public boolean isCloseButtonPresent(){
@@ -132,7 +108,7 @@ public class PlaceOrderPopup extends AbstractPage {
         purchaseButton.click();
     }
 
-    public ConfirmOrderPopup submitPlaceOrderForm(String name, String country, String city, String creditСard, String month, String year) {
+    public ConfirmOrderPage submitPlaceOrderForm(String name, String country, String city, String creditСard, String month, String year) {
         typeName(name);
         typeCountry(country);
         typeCity(city);
@@ -140,6 +116,6 @@ public class PlaceOrderPopup extends AbstractPage {
         typeMonth(month);
         typeYear(year);
         clickPurchaseButton();
-        return new ConfirmOrderPopup(driver);
+        return new ConfirmOrderPage(driver);
     }
 }

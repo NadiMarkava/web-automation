@@ -41,23 +41,23 @@ public class Footer extends AbstractUIObject {
         return aboutUsText.getText();
     }
 
-    public boolean isAboutUsTitlePresent(){
+    public boolean isAboutUsTitlePresent() {
         return aboutUsTitle.isElementPresent();
     }
 
-    public boolean isGetInTouchTitlePresent(){
+    public boolean isGetInTouchTitlePresent() {
         return getInTouchTitle.isElementPresent();
     }
 
-    public boolean isAddressPresent(){
+    public boolean isAddressPresent() {
         return address.isElementPresent();
     }
 
-    public boolean isPhoneNumberPresent(){
+    public boolean isPhoneNumberPresent() {
         return phoneNumber.isElementPresent();
     }
 
-    public boolean isEmailPresent(){
+    public boolean isEmailPresent() {
         return email.isElementPresent();
     }
 

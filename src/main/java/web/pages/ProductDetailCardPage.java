@@ -19,7 +19,7 @@ public class ProductDetailCardPage extends DemoBlazeAbstractPage {
 
     @FindBy(xpath = "//descendant::strong[text()='Product description']/../p")
     private ExtendedWebElement productDescription;
-    
+
     @FindBy(xpath = "//a[text()='Add to cart']")
     private ExtendedWebElement addToCartButton;
 
