@@ -44,6 +44,14 @@ public class Contact extends AbstractPage {
         return messageInput.isElementPresent();
     }
 
+    public boolean isCloseButtonPresent() {
+        return closeButton.isElementPresent();
+    }
+
+    public boolean isSendMessageButtonPresent() {
+        return sendMessageButton.isElementPresent();
+    }
+
     public void typeEmail(String email){
         emailInput.type(email);
     }

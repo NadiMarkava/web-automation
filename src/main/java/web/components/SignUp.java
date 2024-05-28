@@ -37,6 +37,14 @@ public class SignUp extends AbstractPage {
         return passwordInput.isElementPresent();
     }
 
+    public boolean isCloseButtonPresent() {
+        return closeButton.isElementPresent();
+    }
+
+    public boolean isSignUpButtonPresent() {
+        return signUpButton.isElementPresent();
+    }
+
     public void typeUserName(String userName){
         userNameInput.type(userName);
     }

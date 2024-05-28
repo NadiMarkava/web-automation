@@ -70,7 +70,7 @@ public class HomePage extends DemoBlazeAbstractPage {
     }
 
     public void waitUntilProductsLoaded() {
-        waitUntil((e -> !products.isEmpty()), 10);
+        waitUntil((e -> !products.isEmpty()), 5);
     }
 
     public void clickCategory(Category categoryName) {

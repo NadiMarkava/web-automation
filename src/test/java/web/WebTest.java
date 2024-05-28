@@ -8,11 +8,14 @@ import web.pages.CartPage;
 import web.pages.HomePage;
 import web.pages.ProductDetailCardPage;
 
-import java.util.*;
-import java.util.logging.Logger;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static org.testng.Assert.*;
+import static web.enums.AlertMessage.*;
 import static web.enums.Category.*;
 import static web.enums.NavBarMenuOption.*;
 
@@ -34,7 +37,7 @@ public class WebTest extends BaseDemoBlazeTest {
             carouselPreviousImageAttribute = homePage.getCarouselImageAttribute();
         }
         homePage.clickCarouselNext();
-        for (int i = homePage.getCarouselSize() - 1; i > 0; i--) {
+        for (int i = homePage.getCarouselSize() - 1; i >= 0; i--) {
             homePage.clickCarouselBack();
             assertEquals(homePage.getCarouselAttribute(), sliders.get(i) + " slide", "Number of slider is not equal");
         }
@@ -235,16 +238,30 @@ public class WebTest extends BaseDemoBlazeTest {
         SignUp signUp = new SignUp(getDriver());
         assertTrue(signUp.isUserNameFieldPresent(), "User name is not present");
         assertTrue(signUp.isPasswordPresent(), "Password is not present");
+        assertTrue(signUp.isCloseButtonPresent(), "Close button is not present");
+        assertTrue(signUp.isSignUpButtonPresent(), "Sign Up button is not present");
         signUp.signUp(randomText, randomText);
         Alert alert = getDriver().switchTo().alert();
-        assertEquals(alert.getText(), "Sign up successful.", "Texts are not equal");
+        assertEquals(alert.getText(), SUCCESS_SIGN_UP.getText(), "Texts are not equal");
         alert.accept();
         assertFalse(homePage.isModalPresent(), "Modal is present");
+    }
+
+    @Test()
+    public void verifySignUpInWithInvalidInputsTest() {
+        HomePage homePage = new HomePage(getDriver());
+        homePage.open();
         homePage.getNavBar().clickNavBarMenuOption(SIGN_UP);
-        signUp.clickSignUpButton();
-        assertEquals(alert.getText(), "This user already exist.", "Texts are not equal");
+        SignUp signUp = new SignUp(getDriver());
+        signUp.signUp("Test", "Test");
+        Alert alert = getDriver().switchTo().alert();
+        assertEquals(alert.getText(), USER_EXISTS.getText(), "Texts are not equal");
         alert.accept();
-        assertTrue(homePage.isModalPresent(), "Modal is present");
+        assertTrue(homePage.isModalPresent(), "Modal is not present");
+        signUp.signUp("Test", "");
+        assertEquals(alert.getText(), FILL_OUT_NAME_PASSWORD.getText(), "Texts are not equal");
+        alert.accept();
+        assertTrue(homePage.isModalPresent(), "Modal is not present");
     }
 
     @Test()
@@ -257,29 +274,34 @@ public class WebTest extends BaseDemoBlazeTest {
         LogIn logIn = new LogIn(getDriver());
         assertTrue(logIn.isUserNameFieldPresent(), "User name is not present");
         assertTrue(logIn.isPasswordPresent(), "Password is not present");
+        assertTrue(logIn.isCloseButtonPresent(), "Close button is not present");
+        assertTrue(logIn.isLogInButtonPresent(), "Log in button is not present");
         logIn.logIn(userName, password);
+        assertFalse(homePage.isModalPresent(), "Modal is present");
         assertFalse(homePage.getNavBar().isNavItemPresent(LOG_IN), "Log in is present");
         assertFalse(homePage.getNavBar().isNavItemPresent(SIGN_UP), "Sign up is present");
         assertTrue(homePage.getNavBar().isNavItemPresent(WELCOME), "Welcome is not present");
         assertTrue(homePage.getNavBar().isNavItemPresent(LOG_OUT), "Log out is not present");
-        homePage.waitUntilProductsLoaded();
     }
 
     @Test()
-    public void verifyLogInWithErrorTest() {
+    public void verifyLogInWithInvalidInputsTest() {
         HomePage homePage = new HomePage(getDriver());
         homePage.open();
         homePage.getNavBar().clickNavBarMenuOption(LOG_IN);
         LogIn logIn = new LogIn(getDriver());
         logIn.logIn("teeest", "test");
         Alert alert = getDriver().switchTo().alert();
-        assertEquals(alert.getText(), "User does not exist.", "Texts are not equal");
+        assertEquals(alert.getText(), USER_DOES_NOT_EXIST.getText(), "Texts are not equal");
         alert.accept();
+        assertTrue(homePage.isModalPresent(), "Modal is not present");
         logIn.logIn("test", "11111");
-        assertEquals(alert.getText(), "Wrong password.", "Texts are not equal");
+        assertEquals(alert.getText(), WRONG_PASSWORD.getText(), "Texts are not equal");
         alert.accept();
+        assertTrue(homePage.isModalPresent(), "Modal is not present");
         logIn.logIn("", "");
-        assertEquals(alert.getText(), "Please fill out Username and Password.", "Texts are not equal");
+        assertEquals(alert.getText(), FILL_OUT_NAME_PASSWORD.getText(), "Texts are not equal");
+        assertTrue(homePage.isModalPresent(), "Modal is not present");
     }
 
     @Test()
@@ -318,11 +340,15 @@ public class WebTest extends BaseDemoBlazeTest {
         homePage.open();
         homePage.getNavBar().clickNavBarMenuOption(CONTACT);
         Contact contact = new Contact(getDriver());
-        assertTrue(homePage.isModalPresent(), "Modal is present");
         assertTrue(contact.isEmailFieldPresent(), "Email is not present");
         assertTrue(contact.isNameFieldPresent(), "Name is not present");
         assertTrue(contact.isMessageFieldPresent(), "Message is not present");
+        assertTrue(contact.isCloseButtonPresent(), "Close button is not present");
+        assertTrue(contact.isSendMessageButtonPresent(), "Send message button is not present");
         contact.sendMessage("Test", "Test", "Test");
+        Alert alert = getDriver().switchTo().alert();
+        assertEquals(alert.getText(), MESSAGE.getText(), "Texts are not equal");
+        alert.accept();
         assertFalse(homePage.isModalPresent(), "Modal is present");
     }
 

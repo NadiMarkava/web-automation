@@ -37,6 +37,14 @@ public class LogIn extends AbstractPage {
         return passwordInput.isElementPresent();
     }
 
+    public boolean isCloseButtonPresent() {
+        return closeButton.isElementPresent();
+    }
+
+    public boolean isLogInButtonPresent() {
+        return logInButton.isElementPresent();
+    }
+
     public void typeUserName(String userName){
         userNameInput.type(userName);
     }
