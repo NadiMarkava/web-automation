@@ -9,16 +9,40 @@
     <test name="WTesting Page">
         <classes>
             <class name="web.OrderFormTest">
+                <methods>
+                    <include name="verifyPlaceOrderFormTest" />
+                    <include name="verifyConfirmOrderTest" />
+                </methods>
             </class>
             <class name="web.AuthenticationTest">
+                <methods>
+                    <include name="verifySignUpTest" />
+                    <include name="verifySignUpInWithInvalidInputsTest" />
+                    <include name="verifyLogInTest" />
+                    <include name="verifyLogInWithInvalidInputsTest" />
+                </methods>
             </class>
             <class name="web.CartTest">
+                <methods>
+                    <include name="verifyShoppingCartTest" />
+                    <include name="verifyProductCanBeDeletedFromCartTest" />
+                    <include name="verifyMultipleProductsCanBeAddedTest" />
+                    <include name="verifyCartAfterLogOutTest" />
+                </methods>
             </class>
             <class name="web.HomeTest">
+                <methods>
+                    <include name="verifyCarouselTest" />
+                    <include name="verifyCategoriesTest" />
+                    <include name="verifyContactTest" />
+                    <include name="verifyFooterTest" />
+                </methods>
             </class>
             <class name="web.ProductsTest">
-            </class>
-            <class name="web.OrderFormTest">
+            <methods>
+                <include name="verifyProductDataTest" />
+                <include name="verifyProductPageTest" />
+            </methods>
             </class>
         </classes>
     </test>
