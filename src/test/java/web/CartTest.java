@@ -1,5 +1,6 @@
 package web;
 
+import com.zebrunner.agent.core.annotation.TestCaseKey;
 import org.testng.annotations.Test;
 import web.components.Product;
 import web.pages.*;
@@ -14,6 +15,7 @@ import static web.enums.NavBarMenuOption.*;
 public class CartTest extends BaseDemoBlazeTest {
 
     @Test()
+    @TestCaseKey("ANDK-276")
     public void verifyShoppingCartTest() {
         HomePage homePage = new HomePage(getDriver());
         homePage.open();
@@ -44,6 +46,7 @@ public class CartTest extends BaseDemoBlazeTest {
     }
 
     @Test()
+    @TestCaseKey("ANDK-278")
     public void verifyProductCanBeDeletedFromCartTest() {
         HomePage homePage = new HomePage(getDriver());
         homePage.open();
@@ -60,6 +63,7 @@ public class CartTest extends BaseDemoBlazeTest {
     }
 
     @Test()
+    @TestCaseKey("ANDK-331")
     public void verifyMultipleProductsCanBeAddedTest() {
         HomePage homePage = new HomePage(getDriver());
         homePage.open();
@@ -81,6 +85,7 @@ public class CartTest extends BaseDemoBlazeTest {
     }
 
     @Test()
+    @TestCaseKey("ANDK-332")
     public void verifyCartAfterLogOutTest() {
         String userName = "test";
         String password = "test";

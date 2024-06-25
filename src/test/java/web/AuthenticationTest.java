@@ -1,5 +1,6 @@
 package web;
 
+import com.zebrunner.agent.core.annotation.TestCaseKey;
 import org.openqa.selenium.Alert;
 import org.testng.annotations.Test;
 import web.pages.HomePage;
@@ -15,6 +16,7 @@ import static web.enums.NavBarMenuOption.*;
 public class AuthenticationTest extends BaseDemoBlazeTest {
 
     @Test()
+    @TestCaseKey("ANDK-324")
     public void verifySignUpTest() {
         String randomText = UUID.randomUUID()
                 .toString()
@@ -35,6 +37,7 @@ public class AuthenticationTest extends BaseDemoBlazeTest {
     }
 
     @Test()
+    @TestCaseKey("ANDK-325")
     public void verifySignUpInWithInvalidInputsTest() {
         HomePage homePage = new HomePage(getDriver());
         homePage.open();
@@ -52,6 +55,7 @@ public class AuthenticationTest extends BaseDemoBlazeTest {
     }
 
     @Test()
+    @TestCaseKey("ANDK-326")
     public void verifyLogInTest() {
         String userName = "test";
         String password = "test";
@@ -72,6 +76,7 @@ public class AuthenticationTest extends BaseDemoBlazeTest {
     }
 
     @Test()
+    @TestCaseKey("ANDK-327")
     public void verifyLogInWithInvalidInputsTest() {
         HomePage homePage = new HomePage(getDriver());
         homePage.open();
