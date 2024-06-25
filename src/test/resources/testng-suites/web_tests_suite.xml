@@ -6,7 +6,7 @@
     <parameter name="suiteOwner" value="nknysh"/>
 
 
-    <test name="WTesting Page">
+    <test name="Order Form Tests">
         <classes>
             <class name="web.OrderFormTest">
                 <methods>
@@ -14,6 +14,10 @@
                     <include name="verifyConfirmOrderTest" />
                 </methods>
             </class>
+        </classes>
+    </test>
+    <test name="Authentication Tests">
+        <classes>
             <class name="web.AuthenticationTest">
                 <methods>
                     <include name="verifySignUpTest" />
@@ -22,6 +26,10 @@
                     <include name="verifyLogInWithInvalidInputsTest" />
                 </methods>
             </class>
+        </classes>
+    </test>
+    <test name="Cart Tests">
+        <classes>
             <class name="web.CartTest">
                 <methods>
                     <include name="verifyShoppingCartTest" />
@@ -30,6 +38,10 @@
                     <include name="verifyCartAfterLogOutTest" />
                 </methods>
             </class>
+        </classes>
+    </test>
+    <test name="Home Tests">
+        <classes>
             <class name="web.HomeTest">
                 <methods>
                     <include name="verifyCarouselTest" />
@@ -38,6 +50,10 @@
                     <include name="verifyFooterTest" />
                 </methods>
             </class>
+        </classes>
+    </test>
+    <test name="Products Tests">
+        <classes>
             <class name="web.ProductsTest">
             <methods>
                 <include name="verifyProductDataTest" />

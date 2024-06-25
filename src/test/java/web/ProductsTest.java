@@ -1,5 +1,6 @@
 package web;
 
+import com.zebrunner.agent.core.annotation.TestCaseKey;
 import org.testng.annotations.Test;
 import web.components.Product;
 import web.pages.HomePage;
@@ -14,6 +15,7 @@ import static org.testng.Assert.assertTrue;
 public class ProductsTest extends BaseDemoBlazeTest {
 
     @Test()
+    @TestCaseKey("ANDK-290")
     public void verifyProductDataTest() {
         HomePage homePage = new HomePage(getDriver());
         homePage.open();
@@ -28,6 +30,7 @@ public class ProductsTest extends BaseDemoBlazeTest {
     }
 
     @Test()
+    @TestCaseKey("ANDK-275")
     public void verifyProductPageTest() {
         HomePage homePage = new HomePage(getDriver());
         homePage.open();

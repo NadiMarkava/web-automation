@@ -1,5 +1,6 @@
 package web;
 
+import com.zebrunner.agent.core.annotation.TestCaseKey;
 import org.apache.commons.lang3.StringUtils;
 import org.testng.annotations.Test;
 import web.components.Product;
@@ -16,6 +17,7 @@ import static web.enums.NavBarMenuOption.CART;
 public class OrderFormTest extends BaseDemoBlazeTest {
 
     @Test()
+    @TestCaseKey("ANDK-333")
     public void verifyPlaceOrderFormTest() {
         HomePage homePage = new HomePage(getDriver());
         homePage.open();
@@ -34,6 +36,7 @@ public class OrderFormTest extends BaseDemoBlazeTest {
     }
 
     @Test()
+    @TestCaseKey("ANDK-279")
     public void verifyConfirmOrderTest() {
         String name = "Test";
         String creditCard = "Test";

@@ -1,5 +1,6 @@
 package web;
 
+import com.zebrunner.agent.core.annotation.TestCaseKey;
 import org.openqa.selenium.Alert;
 import org.testng.annotations.Test;
 import web.components.Footer;
@@ -18,6 +19,7 @@ import static web.enums.NavBarMenuOption.CONTACT;
 public class HomeTest extends BaseDemoBlazeTest {
 
     @Test()
+    @TestCaseKey("ANDK-328")
     public void verifyCarouselTest() {
         HomePage homePage = new HomePage(getDriver());
         homePage.open();
@@ -36,9 +38,11 @@ public class HomeTest extends BaseDemoBlazeTest {
             homePage.clickCarouselBack();
             assertEquals(homePage.getCarouselAttribute(), sliders.get(i) + " slide", "Number of slider is not equal");
         }
+
     }
 
     @Test()
+    @TestCaseKey("ANDK-277")
     public void verifyCategoriesTest() {
         HomePage homePage = new HomePage(getDriver());
         homePage.open();
@@ -56,6 +60,7 @@ public class HomeTest extends BaseDemoBlazeTest {
     }
 
     @Test()
+    @TestCaseKey("ANDK-329")
     public void verifyContactTest() {
         HomePage homePage = new HomePage(getDriver());
         homePage.open();
@@ -74,6 +79,7 @@ public class HomeTest extends BaseDemoBlazeTest {
     }
 
     @Test()
+    @TestCaseKey("ANDK-330")
     public void verifyFooterTest() {
         HomePage homePage = new HomePage(getDriver());
         homePage.open();
