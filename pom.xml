@@ -22,6 +22,7 @@
 		<carina-appcenter.version>1.1.4</carina-appcenter.version>
 		<java.version>11</java.version>
 		<zebrunner-agent.version>1.9.6</zebrunner-agent.version>
+		<suite>auth_tests</suite>
 	</properties>
 
 	<repositories>
